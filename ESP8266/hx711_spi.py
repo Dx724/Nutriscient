@@ -46,7 +46,7 @@ class HX711:
         self.filtered = self.read()
         # print('Gain & initial value set')
 
-    def _read(self):
+    def __read(self):
         # wait for the device to get ready
         for _ in range(500):
             if self.pOUT() == 0:
@@ -66,14 +66,28 @@ class HX711:
         # return sign corrected result
         return result - ((result & 0x800000) << 1)
 
+    def _read(self): # Account for hardware imperfections
+        readings = []
+        while True:
+            r = self.__read()
+            if r != -1:
+                readings.append(r)
+                if len(readings) == 5: # Median of 5
+                    return sorted(readings)[2]
+            else:
+                time.sleep_ms(1)
+
     def read(self): # Read tared value
         return self._read() - self.OFFSET
 
-    def read_average(self, times=3):
+    def _read_average(self, times=3):
         sum = 0
         for i in range(times):
-            sum += self.read()
+            sum += self._read()
         return sum / times
+
+    def read_average(self, times=3):
+        return self._read_average(times) - self.OFFSET
 
     def read_lowpass(self):
         self.filtered += self.time_constant * (self.read() - self.filtered)
@@ -86,7 +100,8 @@ class HX711:
         return self.get_value() / self.SCALE
 
     def tare(self, times=15):
-        self.set_offset(self.read_average(times))
+        self.set_offset(self._read_average(times))
+        print("Offset: ", self.OFFSET)
 
     def set_scale(self, scale):
         self.SCALE = scale
