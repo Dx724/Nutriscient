@@ -18,6 +18,48 @@ hspi = machine.SPI(1, baudrate=1000000, polarity=0, phase=0)
 # Initialize HX711
 hx = HX711(pin_MOSI, pin_MISO, hspi)
 
+# Debouncer (share one between all buttons due to quick timescale)
+last_interrupt = time.ticks_ms()
+
+def btn_a_cb():
+    pass
+
+def btn_b_cb():
+    pass
+
+def btn_c_cb():
+    pass
+
+def button_cb(pin):
+    global last_interrupt, alarm_set
+    if (time.ticks_diff(time.ticks_ms(), last_interrupt) < 100):
+        # Ignore interrupt if another one just occurred (within 100 ms)
+        return
+    last_val = pin.value()
+    steady = 0
+    while steady < 50:
+        # Only accept an interrupt after the value has been steady for 50 ms
+        time.sleep_ms(1)
+        val = pin.value()
+        if val != last_val:
+            steady = 0
+            last_val = val
+        else:
+            steady += 1
+    last_interrupt = time.ticks_ms()
+    if not last_val: # Button pressed down
+        if pin == btn_a:
+            btn_a_cb()
+        elif pin == btn_b:
+            btn_b_cb()
+        elif pin == btn_c:
+            btn_c_cb()
+
+# Register rising interrupts for buttons
+btn_a.irq(trigger=machine.Pin.IRQ_FALLING, handler=button_cb)
+btn_b.irq(trigger=machine.Pin.IRQ_FALLING, handler=button_cb)
+btn_c.irq(trigger=machine.Pin.IRQ_FALLING, handler=button_cb)
+
 while True:
     print(hx.read())
     time.sleep_ms(500)
