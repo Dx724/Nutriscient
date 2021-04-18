@@ -6,7 +6,6 @@ i2c = machine.I2C(-1, machine.Pin(5), machine.Pin(4))
 oled = ssd1306.SSD1306_I2C(128, 32, i2c)
 
 # OLED Buttons
-btn_a = machine.Pin(13, machine.Pin.IN)
 btn_b = machine.Pin(0, machine.Pin.IN)
 btn_c = machine.Pin(2, machine.Pin.IN)
 
@@ -21,13 +20,13 @@ hx = HX711(pin_MOSI, pin_MISO, hspi)
 # Debouncer (share one between all buttons due to quick timescale)
 last_interrupt = time.ticks_ms()
 
-def btn_a_cb():
-    pass
-
 def btn_b_cb():
+    hx.tare()
+    print("BTNB")
     pass
 
 def btn_c_cb():
+    print("BTNC")
     pass
 
 def button_cb(pin):
@@ -48,15 +47,12 @@ def button_cb(pin):
             steady += 1
     last_interrupt = time.ticks_ms()
     if not last_val: # Button pressed down
-        if pin == btn_a:
-            btn_a_cb()
-        elif pin == btn_b:
+        if pin == btn_b:
             btn_b_cb()
         elif pin == btn_c:
             btn_c_cb()
 
 # Register rising interrupts for buttons
-btn_a.irq(trigger=machine.Pin.IRQ_FALLING, handler=button_cb)
 btn_b.irq(trigger=machine.Pin.IRQ_FALLING, handler=button_cb)
 btn_c.irq(trigger=machine.Pin.IRQ_FALLING, handler=button_cb)
 
