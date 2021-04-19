@@ -138,3 +138,4 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 WorkingData/~$SteadyCalibrationCurve.xlsx
+ESP8266/tag_read.py

@@ -12,7 +12,7 @@ oled.write_cmd(ssd1306.SET_SEG_REMAP)
 
 # OLED Buttons
 #btn_b = machine.Pin(0, machine.Pin.IN)
-#btn_c = machine.Pin(2, machine.Pin.IN)
+btn_c = machine.Pin(2, machine.Pin.IN)
 
 # Initialize HX711 (scale)
 pin_MOSI = machine.Pin(15, machine.Pin.OUT)
@@ -46,7 +46,6 @@ def get_uid():
     return uid_to_str(machine.unique_id())
 ### Helpers End ###
 
-'''
 ### Buttons Start ###
 # Debouncer (share one between all buttons due to quick timescale)
 last_interrupt = time.ticks_ms()
@@ -69,16 +68,15 @@ def button_cb(pin):
             steady += 1
     last_interrupt = time.ticks_ms()
     if not last_val: # Button pressed down
-        if pin == btn_b:
-            btn_b_cb()
-        elif pin == btn_c:
+        '''if pin == btn_b:
+            btn_b_cb()'''
+        if pin == btn_c:
             btn_c_cb()
 
 # Register rising interrupts for buttons
-btn_b.irq(trigger=machine.Pin.IRQ_FALLING, handler=button_cb)
+#btn_b.irq(trigger=machine.Pin.IRQ_FALLING, handler=button_cb)
 btn_c.irq(trigger=machine.Pin.IRQ_FALLING, handler=button_cb)
 ### Buttons End ###
-'''
 
 ### Configuration Start ###
 RISE_THRESHOLD = 4000
@@ -227,10 +225,12 @@ def on_tap():
     if DOUBLE_TAP_DUR_MIN < (t - last_tap_time) < DOUBLE_TAP_DUR_MAX:
         double_tap_cb()
     last_tap_time = t
-    
+
+def on_button():
+    oled_text(None)
 
 #btn_b_cb = lambda: print("BTNB")
-#btn_c_cb = calib_start
+btn_c_cb = on_button
 s2l_cb = on_clear # Steady to low
 measurement_cb = on_measure
 tap_cb = on_tap
