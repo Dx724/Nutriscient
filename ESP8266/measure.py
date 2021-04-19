@@ -84,6 +84,9 @@ AVG_THRESHOLD = 5000
 CALIB_WEIGHTS = [20, 50] # in grams
 NICKEL_WEIGHT = 5 # in grams
 NUM_AVG_READINGS = 3
+NUM_TAG_TRIES = 10
+TAP_DURATION_MAX = 300 # in milliseconds
+DOUBLE_TAP_DUR_MAX = 750 # in milliseconds
 ### Configuration End ###
 
 ### State Start ###
@@ -94,6 +97,8 @@ class State():
 
 state = State.LOW
 read_buffer = []
+last_tap_time = time.ticks_ms()
+tap_timer = time.ticks_ms()
 ### State End ###
 
 ### Steady Conditions Start ###
@@ -143,7 +148,7 @@ calib_data = None
 
 ### Tag Reader Start ###
 def read_tag():
-    while True:
+    for _ in range(NUM_TAG_TRIES):
         (stat, tag_type) = rdr.request(rdr.REQIDL)
         print("STAT", stat)
         if stat == rdr.OK:
@@ -162,10 +167,20 @@ def on_measure(m):
     print("Tag: {}".format(read_tag()))
     oled.invert(1)
 
-btn_b_cb = lambda: print("BTNB")
-btn_c_cb = calib_start
+def on_tap():
+    global last_tap_time
+    t = time.ticks_ms()
+    if (t - last_tap_time) < DOUBLE_TAP_DUR_MAX:
+        double_tap_cb()
+    last_tap_time = t
+    
+
+#btn_b_cb = lambda: print("BTNB")
+#btn_c_cb = calib_start
 s2l_cb = on_clear # Steady to low
 measurement_cb = on_measure
+tap_cb = on_tap
+double_tap_cb = calib_start
 ### Callbacks End ###
 
 # Testing
@@ -177,10 +192,16 @@ while True:
     if state == State.LOW:
         if r > RISE_THRESHOLD:
             read_buffer.clear()
+            tap_timer = time.ticks_ms()
             state = State.HIGH
     elif state == State.HIGH:
         if r < FALL_THRESHOLD:
+            tap_duration = time.ticks_ms() - tap_timer
+            if tap_duration < TAP_DURATION_MAX:
+                tap_cb()
+                
             state = State.LOW
+            
         read_buffer.append(r)
         conds = [f(read_buffer) for f in steady_conditions]
         if all(conds):
