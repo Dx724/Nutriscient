@@ -215,6 +215,7 @@ def on_clear():
 def on_measure(m):
     print("Measurement: {}".format(m))
     print("Tag: {}".format(read_tag()))
+    oled_text("Weight: {}g".format(round(hx.to_grams(m), 2)), "ID: {}".format(get_uid()))
     oled.invert(1)
 
 def on_tap():
