@@ -16,9 +16,15 @@ hspi = machine.SPI(1, baudrate=1000000, polarity=0, phase=0)
 
 # Initialize HX711
 hx = HX711(pin_MOSI, pin_MISO, hspi)
+hx.tare()
 
 # Debouncer (share one between all buttons due to quick timescale)
 last_interrupt = time.ticks_ms()
+
+class State():
+    LOW = 0
+    HIGH = 1
+    STEADY = 2
 
 def btn_b_cb():
     hx.tare()
@@ -56,8 +62,43 @@ def button_cb(pin):
 btn_b.irq(trigger=machine.Pin.IRQ_FALLING, handler=button_cb)
 btn_c.irq(trigger=machine.Pin.IRQ_FALLING, handler=button_cb)
 
+RISE_THRESHOLD = 40000
+FALL_THRESHOLD = 20000
+SAME_THRESHOLD = 1000
+AVG_THRESHOLD = 5000
+state = State.LOW
+read_buffer = []
+
+def local_steady(rb):
+    if len(rb) < 2:
+        return False
+    return abs(rb[-1] - rb[-2]) < SAME_THRESHOLD
+
+def avg_steady(rb):
+    if len(rb) < 5:
+        return False
+    return abs(rb[-1] - sum(rb[-5:])/5) < AVG_THRESHOLD
+
+steady_conditions = [local_steady, avg_steady]
+
 while True:
-    print(hx.read())
+    r = hx.read()
+    if state == State.LOW:
+        if r > RISE_THRESHOLD:
+            read_buffer.clear()
+            state = State.HIGH
+    elif state == State.HIGH:
+        if r < FALL_THRESHOLD:
+            state = State.LOW
+        read_buffer.append(r)
+        conds = [f(read_buffer) for f in steady_conditions]
+        if all(conds):
+            print("Steady reading: {}".format(r))
+            state = State.STEADY
+    elif state == State.STEADY:
+        if r < FALL_THRESHOLD:
+            state = State.LOW
+
     time.sleep_ms(500)
 
 '''
