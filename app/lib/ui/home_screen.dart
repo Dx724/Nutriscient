@@ -3,7 +3,12 @@ import 'package:nutriscient/ui/traning/training_screen.dart';
 import 'package:flutter/material.dart';
 import 'bottom_navigation_view/bottom_bar_view.dart';
 import 'nutriscient_app_theme.dart';
+
 import 'my_diary/my_diary_screen.dart';
+import 'list/ingredients_list_screen.dart';
+import 'register/register_screen.dart';
+import 'visualize/visualize_screen.dart';
+import 'setting/setting_screen.dart';
 
 class NutriscientHomeScreen extends StatefulWidget {
   @override
@@ -77,29 +82,48 @@ class _NutriscientHomeScreenState extends State<NutriscientHomeScreen>
         ),
         BottomBarView(
           tabIconsList: tabIconsList,
-          addClick: () {},
+          addClick: () {
+            animationController.reverse().then<dynamic>((data) {
+              if (!mounted) return;
+              setState(() {
+                tabBody =
+                    RegisterScreen(animationController: animationController);
+              });
+            });
+          },
           changeIndex: (int index) {
-            if (index == 0 || index == 2) {
-              animationController.reverse().then<dynamic>((data) {
-                if (!mounted) {
-                  return;
+            animationController.reverse().then<dynamic>((data) {
+              if (!mounted) {
+                return;
+              }
+              setState(() {
+                switch (index) {
+                  case 0:
+                    tabBody =
+                        MyDiaryScreen(animationController: animationController);
+                    break;
+
+                  case 1:
+                    tabBody = IngredientsListScreen(
+                        animationController: animationController);
+                    break;
+
+                  case 2:
+                    tabBody = VisualizeScreen(
+                        animationController: animationController);
+                    break;
+
+                  case 3:
+                    tabBody = TrainingScreen(
+                        animationController: animationController);
+                    break;
+
+                  default:
+                    debugPrint("Index error");
+                    break;
                 }
-                setState(() {
-                  tabBody =
-                      MyDiaryScreen(animationController: animationController);
-                });
               });
-            } else if (index == 1 || index == 3) {
-              animationController.reverse().then<dynamic>((data) {
-                if (!mounted) {
-                  return;
-                }
-                setState(() {
-                  tabBody =
-                      TrainingScreen(animationController: animationController);
-                });
-              });
-            }
+            });
           },
         ),
       ],
