@@ -103,7 +103,7 @@ class MFRC522:
 		if cmd == 0x0C:
 			self._sflags(0x0D, 0x80)
 
-		i = 500 # Was 2000 before
+		i = 50 # Was 2000 before
 		while True:
 			n = self._rreg(0x04)
 			i -= 1
