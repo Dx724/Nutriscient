@@ -142,7 +142,6 @@ def calib_1(m):
     calib_data = [m, None]
     oled_text("Remove all then", "put {} nickels".format(CALIB_WEIGHTS[1] // NICKEL_WEIGHT)) # Ten nickels, 50g
     measurement_cb = calib_2
-    oled.invert(1)
 
 def calib_2(m):
     global calib_data, measurement_cb, double_tap_cb
