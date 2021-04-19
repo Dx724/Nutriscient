@@ -1,5 +1,7 @@
 import 'package:nutriscient/ui/nutriscient_app_theme.dart';
+import 'package:nutriscient/ui/ui_view/search_box_view.dart';
 import 'package:nutriscient/ui/ui_view/title_view.dart';
+import 'package:nutriscient/ui/ui_view/search_result_view.dart';
 import 'package:flutter/material.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -53,7 +55,7 @@ class _RegisterScreenState extends State<RegisterScreen>
   }
 
   void addAllListData() {
-    const int count = 1;
+    const int count = 3;
 
     listViews.add(
       TitleView(
@@ -67,6 +69,37 @@ class _RegisterScreenState extends State<RegisterScreen>
         callback: () {debugPrint("Show help");},
       ),
     );
+
+    listViews.add(
+      SearchBoxView(
+        animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+            parent: widget.animationController,
+            curve:
+            Interval((1 / count) * 1, 1.0, curve: Curves.fastOutSlowIn))),
+        animationController: widget.animationController,
+        callback: (String searchTxt) {debugPrint(searchTxt);},
+      ),
+    );
+
+    listViews.add(
+      SearchResultView(
+        mainScreenAnimation: Tween<double>(begin: 0.0, end: 1.0).animate(
+            CurvedAnimation(
+                parent: widget.animationController,
+                curve: Interval((1 / count) * 2, 1.0,
+                    curve: Curves.fastOutSlowIn))),
+        mainScreenAnimationController: widget.animationController,
+        callback: resultSelected,
+      ),
+    );
+  }
+
+  void resultSelected(int index) {
+    debugPrint("User selected $index");
+  }
+
+  void addSearchResult() {
+
   }
 
   Future<bool> getData() async {
@@ -93,48 +126,6 @@ class _RegisterScreenState extends State<RegisterScreen>
     );
   }
 
-  Widget _buildComposer() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 16, left: 32, right: 32),
-      child: Container(
-        decoration: BoxDecoration(
-          color: NutriscientAppTheme.white,
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-                color: Colors.grey.withOpacity(0.8),
-                offset: const Offset(4, 4),
-                blurRadius: 8),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(25),
-          child: Container(
-            padding: const EdgeInsets.all(4.0),
-            constraints: const BoxConstraints(minHeight: 80, maxHeight: 160),
-            color: NutriscientAppTheme.white,
-            child: SingleChildScrollView(
-              padding:
-                  const EdgeInsets.only(left: 10, right: 10, top: 0, bottom: 0),
-              child: TextField(
-                maxLines: null,
-                onChanged: (String txt) {},
-                style: TextStyle(
-                  fontFamily: NutriscientAppTheme.fontName,
-                  fontSize: 16,
-                  color: NutriscientAppTheme.dark_grey,
-                ),
-                cursorColor: Colors.blue,
-                decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: 'Enter your feedback...'),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
   Widget getMainListViewUI() {
     return FutureBuilder<bool>(
