@@ -159,7 +159,7 @@ class AreaView extends StatelessWidget {
                         // padding:
                         //     const EdgeInsets.only(top: 16, left: 16, right: 16),
                         child: CachedNetworkImage(
-                          placeholder: (context, url) => CircularProgressIndicator(),
+                          // placeholder: (context, url) => CircularProgressIndicator(),
                           imageUrl: imageUrl,
                         ),
                       ),
