@@ -134,11 +134,16 @@ calib_data = None
 
 ### Callbacks Start ###
 ## Note: additional callbacks in Calibration section above ##
+def on_steady():
+    oled.invert(0)
+
 def on_measure(m):
     print("Measurement: {}".format(m))
+    oled.invert(1)
 
 btn_b_cb = lambda: print("BTNB")
 btn_c_cb = calib_start
+low_cb = on_steady
 measurement_cb = on_measure
 ### Callbacks End ###
 
