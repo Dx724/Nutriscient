@@ -2,6 +2,29 @@ import requests
 from cred import spoonacular_api_key
 from nutrition_dv import dv
 
+from pymongo import MongoClient
+from bson.json_util import dumps, loads
+
+
+class RFID_Database:
+    def __init__(self):
+        client = MongoClient('localhost', 27017)
+        self.db = client['Nutriscient_RFID']
+
+    def insert(self, esp_id, rfid, ingredient_name):
+        col_name = 'ESP' + esp_id
+        collection = self.db[col_name]
+        post = {'rfid' : rfid,
+                'ingredient_name' : ingredient_name}
+        print(post)
+        post_id = collection.insert_one(post).inserted_id
+        print(f'Insert ID: {post_id}')
+
+class Nutrition_Database:
+    def __init__(self):
+        client = MongoClient('localhost', 27017)
+        self.db = client['Nutriscient_nutrition']
+
 
 def get_ingredient_nutrition(ingredient_id=1):
     # 1: Mobile App to search for ingredient, ask user to pick and get its spoonacular ID, pass into here
