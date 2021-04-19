@@ -6,7 +6,7 @@
 -->
 <html>
 	<head>
-		<title>Columbia University EECS E4764 IoT Project Report #0</title>
+		<title>Columbia University EECS E4764 IoT Project Report #2</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
@@ -24,11 +24,11 @@
 					<!-- Logo -->
 						<div id="logo">
 							<!-- <span class="image avatar48"><img src="images/avatar.jpg" alt="" /></span> -->
-							<h1 id="title">Project Name</h1>
+							<h1 id="title">Nutriscient</h1>
 							<p>Columbia University <br>
 								EECS E4764 Spring '21 Internet of Things<br>
 								Intelligent and Connected Systems<br>
-								Team 0 Project Report
+								Team 2 Project Report
 							</p>
 						</div>
 
@@ -64,11 +64,8 @@
 
 					<!-- Social Icons -->
 						<ul class="icons">
-							<li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
-							<li><a href="#" class="icon fa-facebook"><span class="label">Facebook</span></a></li>
-							<li><a href="#" class="icon fa-github"><span class="label">Github</span></a></li>
-							<li><a href="#" class="icon fa-dribbble"><span class="label">Dribbble</span></a></li>
-							<li><a href="#" class="icon fa-envelope"><span class="label">Email</span></a></li>
+							<li><a href="https://github.com/Dx724/Nutriscient" class="icon fa-github"><span class="label">Github</span></a></li>
+							<li><a href="mailto:d.xu@columbia.edu" class="icon fa-envelope"><span class="label">Email</span></a></li>
 						</ul>
 
 				</div>
@@ -84,13 +81,15 @@
 
 								<iframe width="560" height="315" src="https://www.youtube.com/embed/_AlcRoqS65E" frameborder="0" allowfullscreen></iframe>
 
-								<h2 class="alt">Project Name</h2>
-								<p>Project Wonderland is a blah blah blah</p>
-								<p>(Abstract here)</p>
+								<h2 class="alt" style="font-weight: 600">Nutriscient</h2>
+								<p>The hassle-free food scale</p>
+								<p>Everyone's cooking at home during the pandemic, but do we really know what we're eating? The Nutriscient smart food scale automatically tracks your ingredient usage as you cook. The data is uploaded to the cloud where it is analyzed and associated with your account. Nutrition breakdowns and extended-timeframe visualizations are then presented via a cross-platform app.
+								Combining low-cost hardware with sensing algorithms tuned for speed and precision, Nutriscient provides a seamless and intuitive experience for chefs of all levels.
+								</p>
 
 
 							<footer>
-								<a href="#motivation" class="button scrolly">Motivation</a>
+								<a href="#motivation" class="button scrolly">Why does this matter?</a>
 							</footer>
 
 						</div>
@@ -104,7 +103,8 @@
 								<h2>Motivation</h2>
 							</header>
 
-							<p align="left">You can choose to use photos or figures to help</p>
+							<p align="left">More and more people are cooking at home now due to the pandemic. While it's easy to find nutrition facts for processed snacks and restaurant meals, which have both undergone thorough analysis, the same does not apply for food cooked at home. Thus, while we think we know what we're eating, how do the nutrients really add up? Are we inadvertently feeding ourselves and our families more calories, sugars, and fats than we should?
+							<br/><br/>Whether you’re super into fitness or just a typical office worker trying to stay healthy, Nutriscient is a perfect match for you. We designed Nutriscient to be an almost invisible part of your cooking process. With a response time under one second, you can place your ingredients on the scale and take them off without a pause.</p>
 
 
 
@@ -128,14 +128,31 @@
 
 							<h3 align="left">Technical Components</h3>
 
-							<p align="left">Blah blah blah</p>
+							<ul align="left" style="list-style-type: square; padding-left: 2em;">
+								<li>Load cell weight measurement and filtering</li>
+								<li>Scale calibration and display</li>
+								<li>Object presence and steady-state detection</li>
+								<li>Scale surface "double-tap" recognition</li>
+								<li>RFID-based object identification</li>
+								<li>Ingredient nutrition lookup</li>
+								<li>Measurement storage service</li>
+								<li>Visualization API endpoints</li>
+								<li>Cross-platform app</li>
+								<li>Ingredient management interface</li>
+								<li>Per-ingredient statistics and visualizations</li>
+								<li>Temporal visualizations</li>
+							</ul>
 
 
 							<h3 align="left">Prototype</h3>
 
 							<p align="left">Blah blah blah</p>
 
-
+							<a class="image fit">
+								<img src="images/EnclosedDevice.jpg" alt="Enclosed Device" style="width: 48%; display: inline-block" />
+								<img src="images/WiringCloseup.png" alt="Wiring Closeup" style="width: 48%; display: inline-block" />
+								<img src="images/InternalCloseup.jpg" alt="Internal Closeup" style="width: 48%; display: inline-block" />
+							</a>
 
 						</div>
 					</section>
@@ -148,17 +165,55 @@
 								<h2>Results</h2>
 							</header>
 
-							<p align="left">Remember to use figures to help illustrate results</p>
-
+							<p align="left">Initial measurements of the load cell using the HX711 PGA/ADC showed substantial noise. To counteract this, a number of filtering techniques such as outlier rejection and data error detection were employed. Using calibrated weights, it was found that the ideal sensor calibration curve is linear in nature (with amazing accuracy and precision!).</p>
 
 							<article class="item">
-								<a href="#" class="image fit"><img src="images/pic06.jpg" alt="" /></a>
+								<a class="image fit"><img src="images/Calibration.png" alt="" /></a>
 								<header>
-									<h3>Caption</h3>
+									<h3>With basic taring and data smoothing, the filtered sensor measurements showed a surprisingly strong linear correlation (R²=1).</h3>
 								</header>
 							</article>
 
+							<p align="left">However, it would be a hassle if you needed scientific tools and expert knowledge to calibrate the scale. Thus, we developed a guided calibration procedure which instructs the user to place coins on the scale. The system automatically detects when the user has completed the requested action and continues on to the next step. Our sensors used up all of the ESP8266's GPIO (actually, we needed one more than that and hacked together a solution). Thus, we came up with the solution of having the user "double tap" on the scale to enter calibration mode. After calibration, the results are stored to flash and automatically loaded the next time the scale powers on.</p>
 
+							<article class="item">
+								<a class="image fit">
+									<img src="images/Calib_Put4.jpg" alt="" style="width: 48%; display: inline-block" />
+									<img src="images/Calib_Put10.jpg" alt="" style="width: 48%; display: inline-block" />
+									<img src="images/Calib_Complete.jpg" alt="" style="width: 48%; display: inline-block" />
+								</a>
+								<header>
+									<h3>The calibration procedure is illustrated. It occurs only when the user double taps the scale's surface to request recalibration. Otherwise, prior calibration data is loaded automatically. Images 1-3: calibration procedure.</h3>
+								</header>
+							</article>
+							
+							<article class="item">
+								<a class="image fit">
+									<img src="images/Calib_Loaded.jpg" alt="" style="width: 48%; display: inline-block" />
+									<img src="images/Calib_Measurement.jpg" alt="" style="width: 48%; display: inline-block" />
+								</a>
+								<header>
+									<h3>Upon next startup, the previous calibration data is loaded automatically. As shown, measurement is then accurate as expected.</h3>
+								</header>
+							</article>
+							
+							<p align="left">When you're cooking, you don't want to have to fiddle with buttons or options. Nutriscient combines an automatic object presence detection algorithm with an RFID reader to automatically realize when an ingredient is placed onto the scale, wait for it to settle (i.e., the user has let go of the object), and then notice when the ingredient is removed. The ingredient is also identified. The detection algorithm relies only on load cell measurements so that the RFID reader does not have to constantly waste power in scanning for tags.</p>
+
+							<article class="item">
+								<a class="image fit"><img src="images/AutomaticDetection.png" alt="" /></a>
+								<header>
+									<h3>Sample of the automatic detection procedure. State 0: no ingredient. State 1: ingredient placed. State 2: steady measurement obtained. Notice that the entire weighing process completes very rapidly.</h3>
+								</header>
+							</article>
+
+							<p align="left">The results are extremely accurate and precise! Some sample measurements are shown below. Note that the order reflects the order in which the measurements were taken. The measurements were not done in a consistent increasing/decreasing order in order to ensure the absense of sensor hysteresis.</p>
+
+							<article class="item">
+								<a class="image fit"><img src="images/SampleMeasurements.png" alt="" /></a>
+								<header>
+									<h3>A sequence of measurements from the calibrated device. The weights on the left were produced using scientific calibration weights. These results may seem unbelievable, but consider that our system uses a high-gain amplifier combined with a 24-bit ADC.</h3>
+								</header>
+							</article>
 						</div>
 					</section>
 
@@ -168,8 +223,14 @@
 							<header>
 								<h2>References</h2>
 							</header>
-
-							<p align="left">Blah blah blah</p>
+							
+							<ol align="left" style="list-style-type: decimal">
+								<li><a href="https://cdn.sparkfun.com/datasheets/Sensors/ForceFlex/hx711_english.pdf">HX711 datasheet</a></li>
+								<li><a href="https://github.com/robert-hh/hx711">HX711 library baseline</a></li>
+								<li><a href="https://www.nxp.com/docs/en/data-sheet/MFRC522.pdf">MFRC522 datasheet</a></li>
+								<li><a href="https://github.com/wendlers/micropython-mfrc522">MFRC522 library baseline</a></li>
+								<li><a href="https://www.usmint.gov/learn/coin-and-medal-programs/coin-specifications">U.S. coin weights</a></li>
+							</ol>
 
 						</div>
 					</section>
@@ -189,28 +250,31 @@
 							<div class="row">
 								<div class="4u 12u$(mobile)">
 									<article class="item">
-										<a href="#" class="image fit"><img src="images/pic07.jpg" alt="" /></a>
+										<a class="image fit"><img src="images/DavidXu.jpg" alt="" /></a>
 										<header>
-											<h3>Team Member</h3>
-											<p>Description and link</p>
+											<h3>David Xu</h3>
+											<p>Computer Engineering<br/>B.Sc., Class of 2023</p>
+											<a href="https://github.com/Dx724">GitHub</a>
 										</header>
 									</article>
 								</div>
 								<div class="4u 12u$(mobile)">
 									<article class="item">
-										<a href="#" class="image fit"><img src="images/pic07.jpg" alt="" /></a>
+										<a class="image fit"><img src="images/YvonneChen.jpg" alt="" /></a>
 										<header>
-											<h3>Team Member</h3>
-											<p>Description and link</p>
+											<h3>Jiayi "Yvonne" Chen</h3>
+											<p>Computer Engineering<br/>B.Sc., Class of 2021</p>
+											<a href="https://github.com/YvonneChenCS">GitHub</a>
 										</header>
 									</article>
 								</div>
 								<div class="4u$ 12u$(mobile)">
 									<article class="item">
-										<a href="#" class="image fit"><img src="images/pic07.jpg" alt="" /></a>
+										<a class="image fit"><img src="images/ScottZhao.jpg" alt="" /></a>
 										<header>
-											<h3>Team Member</h3>
-											<p>Description and link</p>
+											<h3>Minghui "Scott" Zhao</h3>
+											<p>Computer Engineering<br/>M.S. Class of 2021</p>
+											<a href="https://github.com/zhaomh1998">GitHub</a>
 										</header>
 									</article>
 								</div>
@@ -228,9 +292,9 @@
 							</header>
 
 							<p align="left">
-								<strong>Contact Name 1: </strong>email here</br>
-								<strong>Contact Name 2: </strong>email here</br>
-								<strong>Other Contact Information: </strong>other contact info</br>
+								<strong>David Xu: </strong><a href="mailto:d.xu@columbia.edu">d.xu@columbia.edu</a></br>
+								<strong>Jiayi Chen: </strong><a href="mailto:jc5349@columbia.edu">jc5349@columbia.edu</a></br>
+								<strong>Scott Zhao: </strong><a href="mailto:mz2866@columbia.edu">mz2866@columbia.edu</a></br>
 							</br>
 								<strong>Columbia University </strong><a href="http://www.ee.columbia.edu">Department of Electrical Engineering</a><br>
 								<!-- <strong>Class Website:</strong>
