@@ -87,6 +87,7 @@ NUM_AVG_READINGS = 3
 NUM_TAG_TRIES = 10
 TAP_DURATION_MAX = 300 # in milliseconds
 DOUBLE_TAP_DUR_MAX = 750 # in milliseconds
+CALIB_FILE = "nutriscient.calibration"
 ### Configuration End ###
 
 ### State Start ###
@@ -121,10 +122,12 @@ def tare_scale(c):
     tare_point = c[0]-CALIB_WEIGHTS[0]*m_per_gram
     print("Tared to: ", tare_point)
     hx.set_gram(m_per_gram)
-    hx.adjust_offset(tare_point)
+    hx.set_offset(c[2] + tare_point)
 
 def calib_start():
-    global measurement_cb
+    global measurement_cb, double_tap_cb
+    double_tap_cb = lambda: None
+    oled.invert(1)
     oled_text("Calibration", "Don't touch")
     hx.tare(3)
     oled_text("Calibration", "Put {} nickels".format(CALIB_WEIGHTS[0] // NICKEL_WEIGHT)) # Four nickels, 20g
@@ -135,13 +138,50 @@ def calib_1(m):
     calib_data = [m, None]
     oled_text("Remove all then", "put {} nickels".format(CALIB_WEIGHTS[1] // NICKEL_WEIGHT)) # Ten nickels, 50g
     measurement_cb = calib_2
+    oled.invert(1)
 
 def calib_2(m):
-    global calib_data, measurement_cb
+    global calib_data, measurement_cb, double_tap_cb
     calib_data[1] = m
-    tare_scale(calib_data)
-    oled_text("Calib. Complete", "ID: {}".format(get_uid()))
+    calib_data.append(hx.OFFSET) # Store calibration baseline tare
+    store_calibration()
+    calib_complete(loaded_from_file=False)
     measurement_cb = on_measure
+    double_tap_cb = calib_start
+
+def calib_complete(loaded_from_file):
+    global calib_data
+    tare_scale(calib_data)
+    oled_text("Calib. Loaded" if loaded_from_file else "Calib. Complete", "ID: {}".format(get_uid()))
+
+def store_calibration():
+    global calib_data
+    if calib_data is None:
+        return
+    dat = " ".join([str(i) for i in calib_data])
+    with open(CALIB_FILE, "w") as f:
+        f.write(dat)
+
+def load_calibration():
+    global calib_data
+    try:
+        with open(CALIB_FILE, "r") as f:
+            l = f.readline()
+            d = l.split(" ")
+            if len(d) != len(CALIB_WEIGHTS) + 1:
+                return False
+            calib_data = []
+            for p in d:
+                try:
+                    v = float(p)
+                    calib_data.append(v)
+                except ValueError: # Not an integer
+                    calib_data = None
+                    return False
+            return True
+                    
+    except OSError: # File not found
+        return False
 
 calib_data = None
 ### Calibration End ###
@@ -183,8 +223,12 @@ tap_cb = on_tap
 double_tap_cb = calib_start
 ### Callbacks End ###
 
-# Testing
-calib_start()
+### Pre-Loop Start ###
+if not load_calibration():
+    calib_start()
+else:
+    calib_complete(True)
+### Pre-Loop End ###
 
 while True:
     r = hx.read()
