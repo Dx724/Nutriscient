@@ -3,9 +3,9 @@ import 'package:charts_flutter/flutter.dart' as charts;
 
 import 'package:nutriscient/ui/nutriscient_app_theme.dart';
 import 'package:nutriscient/ui/ui_view/title_view.dart';
-import 'package:nutriscient/ui/visualize/pie_chart_view.dart';
+import 'package:nutriscient/ui/visualize/chart_card_view.dart';
 
-import 'package:nutriscient/ui/models/pie_chart_data.dart';
+import 'package:nutriscient/ui/models/chart_2d_data.dart';
 
 class VisualizeScreen extends StatefulWidget {
   const VisualizeScreen({Key key, this.animationController}) : super(key: key);
@@ -24,7 +24,7 @@ class _VisualizeScreenState extends State<VisualizeScreen>
   final ScrollController scrollController = ScrollController();
   double topBarOpacity = 0.0;
 
-  List<charts.Series<PiechartModel, int>> pieChartData;
+  List<charts.Series<Chart2DModel, int>> pieChartData;
 
   @override
   void initState() {
@@ -89,7 +89,7 @@ class _VisualizeScreenState extends State<VisualizeScreen>
     );
 
     listViews.add(
-      PieChartView(
+      ChartCardView(
         animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
             parent: widget.animationController,
             curve: Interval((1 / count) * 0, 1.0, curve: Curves.fastOutSlowIn))),
