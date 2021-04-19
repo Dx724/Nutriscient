@@ -16,24 +16,26 @@ hspi = machine.SPI(1, baudrate=1000000, polarity=0, phase=0)
 
 # Initialize HX711
 hx = HX711(pin_MOSI, pin_MISO, hspi)
-hx.tare()
 
+### Helpers Start ###
+def oled_text(t1, t2=None):
+    oled.fill(0)
+    if t1 is not None:
+        oled.text("{}".format(t1), 0, 0)
+    if t2 is not None:
+        oled.text("{}".format(t2), 0, 10)
+    oled.show()
+
+def get_uid():
+    return "".join(["{:02x}".format(b) for b in machine.unique_id()])
+
+def tare_scale(c): # c: [20g measurement, 100g measurement]
+    pass
+### Helpers End ###
+
+### Buttons Start ###
 # Debouncer (share one between all buttons due to quick timescale)
 last_interrupt = time.ticks_ms()
-
-class State():
-    LOW = 0
-    HIGH = 1
-    STEADY = 2
-
-def btn_b_cb():
-    hx.tare()
-    print("BTNB")
-    pass
-
-def btn_c_cb():
-    print("BTNC")
-    pass
 
 def button_cb(pin):
     global last_interrupt, alarm_set
@@ -61,14 +63,26 @@ def button_cb(pin):
 # Register rising interrupts for buttons
 btn_b.irq(trigger=machine.Pin.IRQ_FALLING, handler=button_cb)
 btn_c.irq(trigger=machine.Pin.IRQ_FALLING, handler=button_cb)
+### Buttons End ###
 
+### Configuration Start ###
 RISE_THRESHOLD = 4000
 FALL_THRESHOLD = 2000
 SAME_THRESHOLD = 1000
 AVG_THRESHOLD = 5000
+### Configuration End ###
+
+### State Start ###
+class State():
+    LOW = 0
+    HIGH = 1
+    STEADY = 2
+
 state = State.LOW
 read_buffer = []
+### State End ###
 
+### Steady Conditions Start ###
 def local_steady(rb):
     if len(rb) < 2:
         return False
@@ -80,6 +94,35 @@ def avg_steady(rb):
     return abs(rb[-1] - sum(rb[-5:])/5) < AVG_THRESHOLD
 
 steady_conditions = [local_steady, avg_steady]
+### Steady Conditions End ###
+
+### Callbacks Start ###
+## Calibration Start ##
+def calib_start():
+    oled_text("Calibration start", "Place 4 nickels on scale") # Four nickels, 20g
+    measurement_cb = calib_1
+
+def calib_1(m):
+    calib_data[0] = m
+    oled_text("Remove 20g from scale", "place 10 nickels on scale") # Ten nickels, 50g
+    measurement_cb = calib_2
+
+def calib_2(m):
+    calib_data[1] = m
+    tare_scale(calib_data)
+    oled_text("Calibration complete", "Device ID: {}".format(get_uid()))
+    measurement_cb = on_measure
+
+calib_data = [None, None]
+## Calibration End ##
+
+def on_measure(m):
+    print("Measurement: {}".format(m))
+
+btn_b_cb = lambda: print("BTNB")
+btn_c_cb = lambda: print("BTNC")
+measurement_cb = on_measure
+### Callbacks End ###
 
 while True:
     r = hx.read()
