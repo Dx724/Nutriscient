@@ -12,7 +12,7 @@ oled.write_cmd(ssd1306.SET_SEG_REMAP)
 
 # OLED Buttons
 #btn_b = machine.Pin(0, machine.Pin.IN)
-#btn_c = machine.Pin(2, machine.Pin.IN)
+btn_c = machine.Pin(2, machine.Pin.IN)
 
 # Initialize HX711 (scale)
 pin_MOSI = machine.Pin(15, machine.Pin.OUT)
@@ -46,7 +46,6 @@ def get_uid():
     return uid_to_str(machine.unique_id())
 ### Helpers End ###
 
-'''
 ### Buttons Start ###
 # Debouncer (share one between all buttons due to quick timescale)
 last_interrupt = time.ticks_ms()
@@ -69,16 +68,15 @@ def button_cb(pin):
             steady += 1
     last_interrupt = time.ticks_ms()
     if not last_val: # Button pressed down
-        if pin == btn_b:
-            btn_b_cb()
-        elif pin == btn_c:
+        '''if pin == btn_b:
+            btn_b_cb()'''
+        if pin == btn_c:
             btn_c_cb()
 
 # Register rising interrupts for buttons
-btn_b.irq(trigger=machine.Pin.IRQ_FALLING, handler=button_cb)
+#btn_b.irq(trigger=machine.Pin.IRQ_FALLING, handler=button_cb)
 btn_c.irq(trigger=machine.Pin.IRQ_FALLING, handler=button_cb)
 ### Buttons End ###
-'''
 
 ### Configuration Start ###
 RISE_THRESHOLD = 4000
@@ -87,7 +85,7 @@ SAME_THRESHOLD = 1000
 AVG_THRESHOLD = 5000
 CALIB_WEIGHTS = [20, 50] # in grams
 NICKEL_WEIGHT = 5 # in grams
-NUM_AVG_READINGS = 3
+NUM_AVG_READINGS = 4
 NUM_TAG_TRIES = 10
 TAP_DURATION_MIN = 50 # in milliseconds
 TAP_DURATION_MAX = 300 # in milliseconds
@@ -146,6 +144,7 @@ def calib_1(m):
     global calib_data, measurement_cb
     calib_data = [m, None]
     oled_text("Remove all then", "put {} nickels".format(CALIB_WEIGHTS[1] // NICKEL_WEIGHT)) # Ten nickels, 50g
+    oled.invert(1)
     measurement_cb = calib_2
 
 def calib_2(m):
@@ -154,6 +153,7 @@ def calib_2(m):
     calib_data.append(hx.OFFSET) # Store calibration baseline tare
     store_calibration()
     calib_complete(loaded_from_file=False)
+    oled.invert(1)
     measurement_cb = on_measure
     double_tap_cb = calib_start
 
@@ -215,6 +215,7 @@ def on_clear():
 def on_measure(m):
     print("Measurement: {}".format(m))
     print("Tag: {}".format(read_tag()))
+    oled_text("Weight: {:.3f}kg".format(round(hx.to_grams(m)/1000, 3)), "ID: {}".format(get_uid()))
     oled.invert(1)
 
 def on_tap():
@@ -224,10 +225,12 @@ def on_tap():
     if DOUBLE_TAP_DUR_MIN < (t - last_tap_time) < DOUBLE_TAP_DUR_MAX:
         double_tap_cb()
     last_tap_time = t
-    
+
+def on_button():
+    oled_text(None)
 
 #btn_b_cb = lambda: print("BTNB")
-#btn_c_cb = calib_start
+btn_c_cb = on_button
 s2l_cb = on_clear # Steady to low
 measurement_cb = on_measure
 tap_cb = on_tap
@@ -257,7 +260,7 @@ while True:
         if all(conds):
             print("Steady reading: {}".format(r))
             print("Grams: {}".format(hx.to_grams(r)))
-            measurement_cb(r)
+            measurement_cb(sum(read_buffer[-2:])/2.0) # Pass in average of last two
             state = State.STEADY
     elif state == State.STEADY:
         if r < FALL_THRESHOLD:
