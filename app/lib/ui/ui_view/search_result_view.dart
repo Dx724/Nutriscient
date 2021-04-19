@@ -4,7 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../nutriscient_app_theme.dart';
 
 class SearchResultView extends StatefulWidget {
-  const SearchResultView(
+  SearchResultView(
       {Key key, this.mainScreenAnimationController, this.mainScreenAnimation,
       this.callback})
       : super(key: key);
@@ -12,6 +12,17 @@ class SearchResultView extends StatefulWidget {
   final AnimationController mainScreenAnimationController;
   final Animation<dynamic> mainScreenAnimation;
   final Function callback;
+  final List<String> imageUrls = <String>[
+    'https://spoonacular.com/cdn/ingredients_100x100/apple.jpg',
+    'https://spoonacular.com/cdn/ingredients_100x100/beef-cubes-raw.png',
+    'https://spoonacular.com/cdn/ingredients_100x100/beef-broth.png',
+    'https://spoonacular.com/cdn/ingredients_100x100/ribeye-raw.jpg',
+  ];
+
+  final List<String> imageCaptions = <String>[
+    'apple', 'beef', 'beef broth', 'beef steak'
+  ];
+
   @override
   _SearchResultViewState createState() => _SearchResultViewState();
 }
@@ -19,12 +30,8 @@ class SearchResultView extends StatefulWidget {
 class _SearchResultViewState extends State<SearchResultView>
     with TickerProviderStateMixin {
   AnimationController animationController;
-  List<String> areaListData = <String>[
-    'https://spoonacular.com/cdn/ingredients_100x100/apple.jpg',
-    'https://spoonacular.com/cdn/ingredients_100x100/beef-cubes-raw.png',
-    'https://spoonacular.com/cdn/ingredients_100x100/beef-broth.png',
-    'https://spoonacular.com/cdn/ingredients_100x100/ribeye-raw.jpg',
-  ];
+  List<String> imageUrls;
+  List<String> imageCaptions;
   Function callback;
 
   @override
@@ -32,6 +39,8 @@ class _SearchResultViewState extends State<SearchResultView>
     animationController = AnimationController(
         duration: const Duration(milliseconds: 2000), vsync: this);
     callback = widget.callback;
+    imageUrls = widget.imageUrls;
+    imageCaptions = widget.imageCaptions;
     super.initState();
   }
 
@@ -61,9 +70,9 @@ class _SearchResultViewState extends State<SearchResultView>
                   physics: const BouncingScrollPhysics(),
                   scrollDirection: Axis.vertical,
                   children: List<Widget>.generate(
-                    areaListData.length,
+                    imageUrls.length,
                     (int index) {
-                      final int count = areaListData.length;
+                      final int count = imageUrls.length;
                       final Animation<double> animation =
                           Tween<double>(begin: 0.0, end: 1.0).animate(
                         CurvedAnimation(
@@ -74,7 +83,8 @@ class _SearchResultViewState extends State<SearchResultView>
                       );
                       animationController.forward();
                       return AreaView(
-                        imageUrl: areaListData[index],
+                        imageUrl: imageUrls[index],
+                        imageCaption: imageCaptions[index],
                         animation: animation,
                         animationController: animationController,
                         callback: () {callback(index);},
@@ -101,12 +111,14 @@ class AreaView extends StatelessWidget {
   const AreaView({
     Key key,
     this.imageUrl,
+    this.imageCaption,
     this.animationController,
     this.animation,
     this.callback,
   }) : super(key: key);
 
   final String imageUrl;
+  final String imageCaption;
   final AnimationController animationController;
   final Animation<dynamic> animation;
   final Function callback;
@@ -156,7 +168,7 @@ class AreaView extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "Test",
+                        imageCaption,
                         textAlign: TextAlign.left,
                         style: TextStyle(
                           fontFamily: NutriscientAppTheme.fontName,
