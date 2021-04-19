@@ -1,6 +1,11 @@
+import 'package:flutter/material.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
+
 import 'package:nutriscient/ui/nutriscient_app_theme.dart';
 import 'package:nutriscient/ui/ui_view/title_view.dart';
-import 'package:flutter/material.dart';
+import 'package:nutriscient/ui/visualize/pie_chart_view.dart';
+
+import 'package:nutriscient/ui/models/pie_chart_data.dart';
 
 class VisualizeScreen extends StatefulWidget {
   const VisualizeScreen({Key key, this.animationController}) : super(key: key);
@@ -19,12 +24,16 @@ class _VisualizeScreenState extends State<VisualizeScreen>
   final ScrollController scrollController = ScrollController();
   double topBarOpacity = 0.0;
 
+  List<charts.Series<PiechartModel, int>> pieChartData;
+
   @override
   void initState() {
     topBarAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(
             parent: widget.animationController,
             curve: Interval(0, 0.5, curve: Curves.fastOutSlowIn)));
+
+    pieChartData = createSamplePieChartData();
     addAllListData();
 
     scrollController.addListener(() {
@@ -65,6 +74,27 @@ class _VisualizeScreenState extends State<VisualizeScreen>
                 Interval((1 / count) * 0, 1.0, curve: Curves.fastOutSlowIn))),
         animationController: widget.animationController,
         callback: () {debugPrint("buttonCallback");},
+      ),
+    );
+
+    Widget chart = charts.PieChart(
+      pieChartData,
+      animate: true,
+      defaultRenderer: new charts.ArcRendererConfig(
+          arcRendererDecorators: [
+            new charts.ArcLabelDecorator(
+                labelPosition:
+                charts.ArcLabelPosition.auto)
+          ]),
+    );
+
+    listViews.add(
+      PieChartView(
+        animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+            parent: widget.animationController,
+            curve: Interval((1 / count) * 0, 1.0, curve: Curves.fastOutSlowIn))),
+        animationController: widget.animationController,
+        chart: chart,
       ),
     );
   }
