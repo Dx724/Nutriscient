@@ -148,7 +148,7 @@
 								<h2>Results</h2>
 							</header>
 
-							<p align="left">Initial measurements of the load cell using the HX711 PGA/ADC showed substantial noise. To counteract this, a number of filtering techniques such as outlier rejection and data error detection were employed. Using calibrated weights, it was found that the ideal sensor calibration curve is linear in nature.</p>
+							<p align="left">Initial measurements of the load cell using the HX711 PGA/ADC showed substantial noise. To counteract this, a number of filtering techniques such as outlier rejection and data error detection were employed. Using calibrated weights, it was found that the ideal sensor calibration curve is linear in nature (with amazing accuracy and precision!).</p>
 
 							<article class="item">
 								<a href="#" class="image fit"><img src="images/Calibration.png" alt="" /></a>
@@ -157,15 +157,32 @@
 								</header>
 							</article>
 
-							<p align="left">However, it would be a hassle if you needed scientific tools and expert knowledge to calibrate the scale. Thus, we developed a guided calibration procedure which instructs the user to place coins on the scale. The system automatically detects when the user has completed the requested action and continues on to the next step.</p>
+							<p align="left">However, it would be a hassle if you needed scientific tools and expert knowledge to calibrate the scale. Thus, we developed a guided calibration procedure which instructs the user to place coins on the scale. The system automatically detects when the user has completed the requested action and continues on to the next step. Our sensors used up all of the ESP8266's GPIO (actually, we needed one more than that and hacked together a solution). Thus, we came up with the solution of having the user "double tap" on the scale to enter calibration mode. After calibration, the results are stored to flash and automatically loaded the next time the scale powers on.</p>
 
 							<article class="item">
-								<a href="#" class="image fit"><img src="images/Calibration.png" alt="" /></a>
+								<a href="#" class="image fit"><img src="images/CalibrationProcess.png" alt="" /></a>
 								<header>
-									<h3>With basic taring and data smoothing, the filtered sensor measurements showed a surprisingly strong linear correlation (R²=1).</h3>
+									<h3>The calibration procedure is illustrated. It occurs only when the user double taps the scale's surface to request recalibration. Otherwise, prior calibration data is loaded automatically.</h3>
+								</header>
+							</article>
+							
+							<p align="left">When you're cooking, you don't want to have to fiddle with buttons or options. Nutriscient combines an automatic object presence detection algorithm with an RFID reader to automatically realize when an ingredient is placed onto the scale, wait for it to settle (i.e., the user has let go of the object), and then notice when the ingredient is removed. The ingredient is also identified. The detection algorithm relies only on load cell measurements so that the RFID reader does not have to constantly waste power in scanning for tags.</p>
+
+							<article class="item">
+								<a href="#" class="image fit"><img src="images/AutomaticDetection.png" alt="" /></a>
+								<header>
+									<h3>Sample of the automatic detection procedure. State 0: no ingredient. State 1: ingredient placed. State 2: steady measurement obtained. Notice that the entire weighing process completes very rapidly.</h3>
 								</header>
 							</article>
 
+							<p align="left">The results are extremely accurate and precise! Some sample measurements are shown below. Note that the order reflects the order in which the measurements were taken. The measurements were not done in a consistent increasing/decreasing order in order to ensure the absense of sensor hysteresis.</p>
+
+							<article class="item">
+								<a href="#" class="image fit"><img src="images/SampleMeasurements.png" alt="" /></a>
+								<header>
+									<h3>A sequence of measurements from the calibrated device. The weights on the left were produced using scientific calibration weights. These results may seem unbelievable, but consider that our system uses a high-gain amplifier combined with a 24-bit ADC.</h3>
+								</header>
+							</article>
 						</div>
 					</section>
 
