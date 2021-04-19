@@ -1,5 +1,5 @@
 import machine, ssd1306, network, time, urequests, ujson, random
-from hx711_spi import HX711
+from hx711_gpio import HX711
 
 # Connect to OLED
 i2c = machine.I2C(-1, machine.Pin(5), machine.Pin(4))
@@ -9,13 +9,10 @@ oled = ssd1306.SSD1306_I2C(128, 32, i2c)
 btn_b = machine.Pin(0, machine.Pin.IN)
 btn_c = machine.Pin(2, machine.Pin.IN)
 
-# Initialize hardware SPI
+# Initialize HX711
 pin_MOSI = machine.Pin(13, machine.Pin.OUT)
 pin_MISO = machine.Pin(12, machine.Pin.IN)
-hspi = machine.SPI(1, baudrate=1000000, polarity=0, phase=0)
-
-# Initialize HX711
-hx = HX711(pin_MOSI, pin_MISO, hspi)
+hx = HX711(pin_MOSI, pin_MISO)
 
 ### Helpers Start ###
 def oled_text(t1, t2=None, t3=None):
@@ -77,6 +74,7 @@ SAME_THRESHOLD = 1000
 AVG_THRESHOLD = 5000
 CALIB_WEIGHTS = [20, 50] # in grams
 NICKEL_WEIGHT = 5 # in grams
+NUM_AVG_READINGS = 7
 ### Configuration End ###
 
 ### State Start ###
@@ -96,9 +94,9 @@ def local_steady(rb):
     return abs(rb[-1] - rb[-2]) < SAME_THRESHOLD
 
 def avg_steady(rb):
-    if len(rb) < 5:
+    if len(rb) < NUM_AVG_READINGS:
         return False
-    return abs(rb[-1] - sum(rb[-5:])/5) < AVG_THRESHOLD
+    return abs(rb[-1] - sum(rb[-NUM_AVG_READINGS:])/NUM_AVG_READINGS) < AVG_THRESHOLD
 
 steady_conditions = [local_steady, avg_steady]
 ### Steady Conditions End ###
@@ -146,6 +144,7 @@ measurement_cb = on_measure
 
 while True:
     r = hx.read()
+    print("DEBUG", r, state)
     if state == State.LOW:
         if r > RISE_THRESHOLD:
             read_buffer.clear()
@@ -164,7 +163,7 @@ while True:
         if r < FALL_THRESHOLD:
             state = State.LOW
 
-    time.sleep_ms(500)
+    time.sleep_ms(10)
 
 '''
 # Get API Key
