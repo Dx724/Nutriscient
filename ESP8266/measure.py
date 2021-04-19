@@ -10,8 +10,8 @@ btn_b = machine.Pin(0, machine.Pin.IN)
 btn_c = machine.Pin(2, machine.Pin.IN)
 
 # Initialize HX711
-pin_MOSI = machine.Pin(13, machine.Pin.OUT)
-pin_MISO = machine.Pin(12, machine.Pin.IN)
+pin_MOSI = machine.Pin(15, machine.Pin.OUT)
+pin_MISO = machine.Pin(16, machine.Pin.IN)
 hx = HX711(pin_MOSI, pin_MISO)
 
 ### Helpers Start ###
@@ -144,7 +144,7 @@ measurement_cb = on_measure
 
 while True:
     r = hx.read()
-    print("DEBUG", r, state)
+    #print("DEBUG", r, state)
     if state == State.LOW:
         if r > RISE_THRESHOLD:
             read_buffer.clear()
