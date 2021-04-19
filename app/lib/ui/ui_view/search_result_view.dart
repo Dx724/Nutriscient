@@ -47,6 +47,7 @@ class _SearchResultViewState extends State<SearchResultView>
 
   @override
   Widget build(BuildContext context) {
+    double aspectRatio = 2 / ((imageUrls.length / 2).ceil()); // 2 column, len/2 rows
     return AnimatedBuilder(
       animation: widget.mainScreenAnimationController,
       builder: (BuildContext context, Widget child) {
@@ -56,12 +57,12 @@ class _SearchResultViewState extends State<SearchResultView>
             transform: Matrix4.translationValues(
                 0.0, 30 * (1.0 - widget.mainScreenAnimation.value), 0.0),
             child: AspectRatio(
-              aspectRatio: 1.0,
+              aspectRatio: aspectRatio,
               child: Padding(
                 padding: const EdgeInsets.only(left: 8.0, right: 8),
                 child: GridView(
                   padding: const EdgeInsets.only(
-                      left: 16, right: 16, top: 16, bottom: 16),
+                      left: 16, right: 16, top: 24, bottom: 24),
                   physics: const BouncingScrollPhysics(),
                   scrollDirection: Axis.vertical,
                   children: List<Widget>.generate(
