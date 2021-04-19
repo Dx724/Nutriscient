@@ -1,5 +1,6 @@
 import 'package:nutriscient/ui/nutriscient_app_theme.dart';
 import 'package:nutriscient/ui/ui_view/title_view.dart';
+import 'package:nutriscient/ui/ui_view/search_result_view.dart';
 import 'package:flutter/material.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -53,7 +54,7 @@ class _RegisterScreenState extends State<RegisterScreen>
   }
 
   void addAllListData() {
-    const int count = 1;
+    const int count = 2;
 
     listViews.add(
       TitleView(
@@ -67,6 +68,26 @@ class _RegisterScreenState extends State<RegisterScreen>
         callback: () {debugPrint("Show help");},
       ),
     );
+
+    listViews.add(
+      SearchResultView(
+        mainScreenAnimation: Tween<double>(begin: 0.0, end: 1.0).animate(
+            CurvedAnimation(
+                parent: widget.animationController,
+                curve: Interval((1 / count) * 1, 1.0,
+                    curve: Curves.fastOutSlowIn))),
+        mainScreenAnimationController: widget.animationController,
+        callback: resultSelected,
+      ),
+    );
+  }
+
+  void resultSelected(int index) {
+    debugPrint("User selected $index");
+  }
+
+  void addSearchResult() {
+
   }
 
   Future<bool> getData() async {
