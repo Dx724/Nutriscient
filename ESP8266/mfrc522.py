@@ -36,13 +36,13 @@ class MFRC522:
 	AUTHENT1A = 0x60
 	AUTHENT1B = 0x61
 
-	def __init__(self):
+	def __init__(self, cs_pin):
 
 		#self.sck = Pin(sck, Pin.OUT)
 		#self.mosi = Pin(mosi, Pin.OUT)
 		#self.miso = Pin(miso)
 		#self.rst = Pin(rst, Pin.OUT)
-		self.cs = Pin(0, Pin.OUT)
+		self.cs = Pin(cs_pin, Pin.OUT)
 
 		#self.rst.value(0)
 		self.cs.value(1)
@@ -103,7 +103,7 @@ class MFRC522:
 		if cmd == 0x0C:
 			self._sflags(0x0D, 0x80)
 
-		i = 2000
+		i = 500 # Was 2000 before
 		while True:
 			n = self._rreg(0x04)
 			i -= 1
