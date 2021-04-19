@@ -90,6 +90,8 @@ class _IngredientsListScreenState extends State<IngredientsListScreen>
           context: context,
           rows: ingredientTableData,
         ),
+        sortColumnIndex: 2, // Percent Left
+        showCheckboxColumn: false,
       ),
     );
   }
@@ -257,12 +259,13 @@ class _DataSource extends DataTableSource {
       index: index,
       selected: row.selected,
       onSelectChanged: (value) {
-        if (row.selected != value) {
-          _selectedCount += value ? 1 : -1;
-          assert(_selectedCount >= 0);
-          row.selected = value;
-          notifyListeners();
-        }
+        debugPrint("User tapped ingredient index $index");
+        // if (row.selected != value) {
+        //   _selectedCount += value ? 1 : -1;
+        //   assert(_selectedCount >= 0);
+        //   row.selected = value;
+        //   notifyListeners();
+        // }
       },
       cells: [
         DataCell(Text(row.name)),
