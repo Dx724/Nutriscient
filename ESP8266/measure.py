@@ -146,6 +146,7 @@ def calib_1(m):
     global calib_data, measurement_cb
     calib_data = [m, None]
     oled_text("Remove all then", "put {} nickels".format(CALIB_WEIGHTS[1] // NICKEL_WEIGHT)) # Ten nickels, 50g
+    oled.invert(1)
     measurement_cb = calib_2
 
 def calib_2(m):
@@ -154,6 +155,7 @@ def calib_2(m):
     calib_data.append(hx.OFFSET) # Store calibration baseline tare
     store_calibration()
     calib_complete(loaded_from_file=False)
+    oled.invert(1)
     measurement_cb = on_measure
     double_tap_cb = calib_start
 
