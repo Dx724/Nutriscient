@@ -1,18 +1,22 @@
 import machine, ssd1306, network, time, urequests, ujson, random
 from hx711_gpio import HX711
+from mfrc522 import MFRC522
 
 # Connect to OLED
 i2c = machine.I2C(-1, machine.Pin(5), machine.Pin(4))
 oled = ssd1306.SSD1306_I2C(128, 32, i2c)
 
 # OLED Buttons
-btn_b = machine.Pin(0, machine.Pin.IN)
-btn_c = machine.Pin(2, machine.Pin.IN)
+#btn_b = machine.Pin(0, machine.Pin.IN)
+#btn_c = machine.Pin(2, machine.Pin.IN)
 
-# Initialize HX711
+# Initialize HX711 (scale)
 pin_MOSI = machine.Pin(15, machine.Pin.OUT)
 pin_MISO = machine.Pin(16, machine.Pin.IN)
 hx = HX711(pin_MOSI, pin_MISO)
+
+# Initialize MFRC522 (tag reader)
+rdr = MFRC522(0)
 
 ### Helpers Start ###
 def oled_text(t1, t2=None, t3=None):
@@ -31,10 +35,14 @@ def oled_text(t1, t2=None, t3=None):
         oled.text("{}".format(t2), 0, 20)
     oled.show()
 
+def uid_to_str(uid):
+    return "".join(["{:02x}".format(b) for b in uid])
+
 def get_uid():
-    return "".join(["{:02x}".format(b) for b in machine.unique_id()])
+    return uid_to_str(machine.unique_id())
 ### Helpers End ###
 
+'''
 ### Buttons Start ###
 # Debouncer (share one between all buttons due to quick timescale)
 last_interrupt = time.ticks_ms()
@@ -66,6 +74,7 @@ def button_cb(pin):
 btn_b.irq(trigger=machine.Pin.IRQ_FALLING, handler=button_cb)
 btn_c.irq(trigger=machine.Pin.IRQ_FALLING, handler=button_cb)
 ### Buttons End ###
+'''
 
 ### Configuration Start ###
 RISE_THRESHOLD = 4000
@@ -74,7 +83,7 @@ SAME_THRESHOLD = 1000
 AVG_THRESHOLD = 5000
 CALIB_WEIGHTS = [20, 50] # in grams
 NICKEL_WEIGHT = 5 # in grams
-NUM_AVG_READINGS = 7
+NUM_AVG_READINGS = 3
 ### Configuration End ###
 
 ### State Start ###
@@ -132,20 +141,35 @@ def calib_2(m):
 calib_data = None
 ### Calibration End ###
 
+### Tag Reader Start ###
+def read_tag():
+    while True:
+        (stat, tag_type) = rdr.request(rdr.REQIDL)
+        print("STAT", stat)
+        if stat == rdr.OK:
+            (stat, raw_uid) = rdr.anticoll()
+            if stat == rdr.OK:
+                return uid_to_str(raw_uid)    
+### Tag Reader End ###
+
 ### Callbacks Start ###
 ## Note: additional callbacks in Calibration section above ##
-def on_steady():
+def on_clear():
     oled.invert(0)
 
 def on_measure(m):
     print("Measurement: {}".format(m))
+    print("Tag: {}".format(read_tag()))
     oled.invert(1)
 
 btn_b_cb = lambda: print("BTNB")
 btn_c_cb = calib_start
-low_cb = on_steady
+s2l_cb = on_clear # Steady to low
 measurement_cb = on_measure
 ### Callbacks End ###
+
+# Testing
+calib_start()
 
 while True:
     r = hx.read()
@@ -166,6 +190,7 @@ while True:
             state = State.STEADY
     elif state == State.STEADY:
         if r < FALL_THRESHOLD:
+            s2l_cb()
             state = State.LOW
 
     time.sleep_ms(10)
