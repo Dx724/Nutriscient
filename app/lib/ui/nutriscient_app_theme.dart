@@ -86,4 +86,13 @@ class NutriscientAppTheme {
     letterSpacing: 0.2,
     color: lightText, // was lightText
   );
+
+  static const TextStyle captionBig = TextStyle(
+    fontFamily: fontName,
+    fontWeight: FontWeight.normal,
+    fontSize: 18,
+    letterSpacing: 0.5,
+    color: darkText,
+  );
+
 }

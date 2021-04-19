@@ -156,8 +156,6 @@ class AreaView extends StatelessWidget {
                   child: Column(
                     children: <Widget>[
                       Expanded(
-                        // padding:
-                        //     const EdgeInsets.only(top: 16, left: 16, right: 16),
                         child: CachedNetworkImage(
                           // placeholder: (context, url) => CircularProgressIndicator(),
                           imageUrl: imageUrl,
@@ -166,13 +164,7 @@ class AreaView extends StatelessWidget {
                       Text(
                         imageCaption,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontFamily: NutriscientAppTheme.fontName,
-                          fontWeight: FontWeight.normal,
-                          fontSize: 18,
-                          letterSpacing: 0.5,
-                          color: NutriscientAppTheme.darkText,
-                        ),
+                        style: NutriscientAppTheme.captionBig,
                       ),
                       Padding(
                         padding: EdgeInsets.only(top: 16, left: 16, right: 16),
