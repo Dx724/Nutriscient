@@ -6,6 +6,10 @@ from mfrc522 import MFRC522
 i2c = machine.I2C(-1, machine.Pin(5), machine.Pin(4))
 oled = ssd1306.SSD1306_I2C(128, 32, i2c)
 
+# Rotate OLED 180 degrees
+oled.write_cmd(ssd1306.SET_COM_OUT_DIR)
+oled.write_cmd(ssd1306.SET_SEG_REMAP)
+
 # OLED Buttons
 #btn_b = machine.Pin(0, machine.Pin.IN)
 #btn_c = machine.Pin(2, machine.Pin.IN)
