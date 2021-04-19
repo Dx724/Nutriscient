@@ -1,3 +1,4 @@
+import 'package:nutriscient/main.dart';
 import 'package:nutriscient/ui/nutriscient_app_theme.dart';
 import 'package:flutter/material.dart';
 
@@ -32,38 +33,44 @@ class SearchBoxView extends StatelessWidget {
                     Expanded(
                       child: _buildComposer(searchTextController)
                     ),
-                    InkWell(
-                      highlightColor: Colors.transparent,
-                      borderRadius: BorderRadius.all(Radius.circular(4.0)),
-                      onTap: () {this.callback(searchTextController.text);},
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 8),
-                        child: Row(
-                          children: <Widget>[
-                            Text(
-                              "Search",
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                fontFamily: NutriscientAppTheme.fontName,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 16,
-                                letterSpacing: 0.5,
-                                color: NutriscientAppTheme.nearlyDarkBlue,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 38,
-                              width: 26,
-                              child: Icon(
-                                Icons.arrow_forward,
-                                color: NutriscientAppTheme.darkText,
-                                size: 18,
-                              ),
-                            ),
-                          ],
+                    Container(
+                      // alignment: Alignment.center,s
+                      decoration: BoxDecoration(
+                        color: NutriscientAppTheme.nearlyDarkBlue,
+                        gradient: LinearGradient(
+                            colors: [
+                              NutriscientAppTheme.nearlyDarkBlue,
+                              HexColor('#6A88E5'),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight),
+                        shape: BoxShape.circle,
+                        boxShadow: <BoxShadow>[
+                          BoxShadow(
+                              color: NutriscientAppTheme.nearlyDarkBlue
+                                  .withOpacity(0.4),
+                              offset: const Offset(8.0, 16.0),
+                              blurRadius: 16.0),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          splashColor: Colors.white.withOpacity(0.1),
+                          highlightColor: Colors.transparent,
+                          focusColor: Colors.transparent,
+                          onTap: () {
+                            if (searchTextController.text != "")
+                              this.callback(searchTextController.text);
+                          },
+                          child: Icon(
+                            Icons.search,
+                            color: NutriscientAppTheme.white,
+                            size: 48,
+                          ),
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -73,6 +80,7 @@ class SearchBoxView extends StatelessWidget {
       },
     );
   }
+
 }
 
 Widget _buildComposer(TextEditingController searchTextController) {
