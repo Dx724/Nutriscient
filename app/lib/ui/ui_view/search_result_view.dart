@@ -6,22 +6,15 @@ import '../nutriscient_app_theme.dart';
 class SearchResultView extends StatefulWidget {
   SearchResultView(
       {Key key, this.mainScreenAnimationController, this.mainScreenAnimation,
-      this.callback})
+      this.callback, this.imageUrls, this.imageCaptions, this.itemIds})
       : super(key: key);
 
   final AnimationController mainScreenAnimationController;
   final Animation<dynamic> mainScreenAnimation;
   final Function callback;
-  final List<String> imageUrls = <String>[
-    'https://spoonacular.com/cdn/ingredients_100x100/apple.jpg',
-    'https://spoonacular.com/cdn/ingredients_100x100/beef-cubes-raw.png',
-    'https://spoonacular.com/cdn/ingredients_100x100/beef-broth.png',
-    'https://spoonacular.com/cdn/ingredients_100x100/ribeye-raw.jpg',
-  ];
-
-  final List<String> imageCaptions = <String>[
-    'apple', 'beef', 'beef broth', 'beef steak'
-  ];
+  final List<String> imageUrls;
+  final List<String> imageCaptions;
+  final List<int> itemIds;
 
   @override
   _SearchResultViewState createState() => _SearchResultViewState();
@@ -32,6 +25,7 @@ class _SearchResultViewState extends State<SearchResultView>
   AnimationController animationController;
   List<String> imageUrls;
   List<String> imageCaptions;
+  List<int> itemIds;
   Function callback;
 
   @override
@@ -41,6 +35,7 @@ class _SearchResultViewState extends State<SearchResultView>
     callback = widget.callback;
     imageUrls = widget.imageUrls;
     imageCaptions = widget.imageCaptions;
+    itemIds = widget.itemIds;
     super.initState();
   }
 
@@ -87,7 +82,7 @@ class _SearchResultViewState extends State<SearchResultView>
                         imageCaption: imageCaptions[index],
                         animation: animation,
                         animationController: animationController,
-                        callback: () {callback(index);},
+                        callback: () {callback(itemIds[index]);},
                       );
                     },
                   ),
@@ -169,7 +164,7 @@ class AreaView extends StatelessWidget {
                       ),
                       Text(
                         imageCaption,
-                        textAlign: TextAlign.left,
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           fontFamily: NutriscientAppTheme.fontName,
                           fontWeight: FontWeight.normal,
