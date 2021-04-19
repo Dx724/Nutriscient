@@ -18,19 +18,24 @@ hspi = machine.SPI(1, baudrate=1000000, polarity=0, phase=0)
 hx = HX711(pin_MOSI, pin_MISO, hspi)
 
 ### Helpers Start ###
-def oled_text(t1, t2=None):
+def oled_text(t1, t2=None, t3=None):
     oled.fill(0)
     if t1 is not None:
+        if len(t1) > 16:
+            print("Length Warning: ", t1)
         oled.text("{}".format(t1), 0, 0)
     if t2 is not None:
+        if len(t2) > 16:
+            print("Length Warning: ", t2)
         oled.text("{}".format(t2), 0, 10)
+    if t3 is not None:
+        if len(t3) > 16:
+            print("Length Warning: ", t3)
+        oled.text("{}".format(t2), 0, 20)
     oled.show()
 
 def get_uid():
     return "".join(["{:02x}".format(b) for b in machine.unique_id()])
-
-def tare_scale(c): # c: [20g measurement, 100g measurement]
-    pass
 ### Helpers End ###
 
 ### Buttons Start ###
@@ -70,6 +75,8 @@ RISE_THRESHOLD = 4000
 FALL_THRESHOLD = 2000
 SAME_THRESHOLD = 1000
 AVG_THRESHOLD = 5000
+CALIB_WEIGHTS = [20, 50] # in grams
+NICKEL_WEIGHT = 5 # in grams
 ### Configuration End ###
 
 ### State Start ###
@@ -96,31 +103,44 @@ def avg_steady(rb):
 steady_conditions = [local_steady, avg_steady]
 ### Steady Conditions End ###
 
-### Callbacks Start ###
-## Calibration Start ##
+### Calibration Start ###
+def tare_scale(c):
+    m_per_gram = float(c[1]-c[0])/(CALIB_WEIGHTS[1]-CALIB_WEIGHTS[0])
+    tare_point = c[0]-CALIB_WEIGHTS[0]*m_per_gram
+    print("Tared to: ", tare_point)
+    hx.set_gram(m_per_gram)
+    hx.adjust_offset(tare_point)
+
 def calib_start():
-    oled_text("Calibration start", "Place 4 nickels on scale") # Four nickels, 20g
+    global measurement_cb
+    oled_text("Calibration", "Don't touch")
+    hx.tare(3)
+    oled_text("Calibration", "Put {} nickels".format(CALIB_WEIGHTS[0] // NICKEL_WEIGHT)) # Four nickels, 20g
     measurement_cb = calib_1
 
 def calib_1(m):
-    calib_data[0] = m
-    oled_text("Remove 20g from scale", "place 10 nickels on scale") # Ten nickels, 50g
+    global calib_data, measurement_cb
+    calib_data = [m, None]
+    oled_text("Remove all then", "put {} nickels".format(CALIB_WEIGHTS[1] // NICKEL_WEIGHT)) # Ten nickels, 50g
     measurement_cb = calib_2
 
 def calib_2(m):
+    global calib_data, measurement_cb
     calib_data[1] = m
     tare_scale(calib_data)
-    oled_text("Calibration complete", "Device ID: {}".format(get_uid()))
+    oled_text("Calib. Complete", "ID: {}".format(get_uid()))
     measurement_cb = on_measure
 
-calib_data = [None, None]
-## Calibration End ##
+calib_data = None
+### Calibration End ###
 
+### Callbacks Start ###
+## Note: additional callbacks in Calibration section above ##
 def on_measure(m):
     print("Measurement: {}".format(m))
 
 btn_b_cb = lambda: print("BTNB")
-btn_c_cb = lambda: print("BTNC")
+btn_c_cb = calib_start
 measurement_cb = on_measure
 ### Callbacks End ###
 
@@ -137,6 +157,8 @@ while True:
         conds = [f(read_buffer) for f in steady_conditions]
         if all(conds):
             print("Steady reading: {}".format(r))
+            print("Grams: {}".format(hx.to_grams(r)))
+            measurement_cb(r)
             state = State.STEADY
     elif state == State.STEADY:
         if r < FALL_THRESHOLD:

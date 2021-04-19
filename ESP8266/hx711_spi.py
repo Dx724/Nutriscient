@@ -27,7 +27,7 @@ class HX711:
         self.in_data = bytearray(7)
 
         self.OFFSET = 0
-        self.SCALE = 1
+        self.GRAM = 1
 
         self.time_constant = 0.1
         self.filtered = 0
@@ -96,18 +96,21 @@ class HX711:
     def get_value(self):
         return self.read_lowpass() - self.OFFSET
 
-    def get_units(self):
-        return self.get_value() / self.SCALE
+    def to_grams(self, m):
+        return float(m) / self.GRAM
 
     def tare(self, times=15):
         self.set_offset(self._read_average(times))
         print("Offset: ", self.OFFSET)
 
-    def set_scale(self, scale):
-        self.SCALE = scale
+    def set_gram(self, amt):
+        self.GRAM = amt
 
     def set_offset(self, offset):
         self.OFFSET = offset
+
+    def adjust_offset(self, adjustment):
+        self.OFFSET += adjustment
 
     def set_time_constant(self, time_constant=None):
         if time_constant is None:
