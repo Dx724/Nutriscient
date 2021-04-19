@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:nutriscient/ui/nutriscient_app_theme.dart';
 import 'package:nutriscient/ui/ui_view/title_view.dart';
 import 'package:flutter/material.dart';
@@ -19,13 +21,18 @@ class _IngredientsListScreenState extends State<IngredientsListScreen>
   final ScrollController scrollController = ScrollController();
   double topBarOpacity = 0.0;
 
+  List<_Row> ingredientTableData;
+
   @override
   void initState() {
     topBarAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(
             parent: widget.animationController,
             curve: Interval(0, 0.5, curve: Curves.fastOutSlowIn)));
-    addAllListData();
+    getIngredientData().then((result) {
+        ingredientTableData = result;
+        addAllListData();
+    });
 
     scrollController.addListener(() {
       if (scrollController.offset >= 24) {
@@ -64,14 +71,43 @@ class _IngredientsListScreenState extends State<IngredientsListScreen>
             curve:
                 Interval((1 / count) * 0, 1.0, curve: Curves.fastOutSlowIn))),
         animationController: widget.animationController,
-        callback: () {debugPrint("buttonCallback");},
+        callback: () {
+          debugPrint("buttonCallback");
+        },
+      ),
+    );
+
+    listViews.add(
+      PaginatedDataTable(
+        header: Text('Header Text'),
+        rowsPerPage: min(ingredientTableData.length, PaginatedDataTable.defaultRowsPerPage),
+        columns: [
+          DataColumn(label: Text('Name')),
+          DataColumn(label: Text('Weight')),
+          DataColumn(label: Text('Percent Left')),
+        ],
+        source: _DataSource(
+          context: context,
+          rows: ingredientTableData,
+        ),
       ),
     );
   }
 
   Future<bool> getData() async {
-    await Future<dynamic>.delayed(const Duration(milliseconds: 50));
+    await Future<dynamic>.delayed(const Duration(milliseconds: 500));
     return true;
+  }
+
+  Future<List<_Row>> getIngredientData() async {
+    await Future<dynamic>.delayed(const Duration(milliseconds: 50));
+    // TODO: Call /get_ingredients
+    return [
+      _Row('salt', 300, 30),
+      _Row('pepper', 50, 50),
+      _Row('beef', 500, 90),
+      _Row('chicken', 200, 100),
+    ];
   }
 
   @override
@@ -188,4 +224,60 @@ class _IngredientsListScreenState extends State<IngredientsListScreen>
       ],
     );
   }
+}
+
+class _Row {
+  _Row(
+    this.name,
+    this.weight,
+    this.percentLeft,
+  );
+
+  final String name;
+  final double weight;
+  final double percentLeft;
+
+  bool selected = false;
+}
+
+class _DataSource extends DataTableSource {
+  _DataSource({this.context, this.rows});
+
+  final BuildContext context;
+  List<_Row> rows;
+
+  int _selectedCount = 0;
+
+  @override
+  DataRow getRow(int index) {
+    assert(index >= 0);
+    if (index >= rows.length) return null;
+    final row = rows[index];
+    return DataRow.byIndex(
+      index: index,
+      selected: row.selected,
+      onSelectChanged: (value) {
+        if (row.selected != value) {
+          _selectedCount += value ? 1 : -1;
+          assert(_selectedCount >= 0);
+          row.selected = value;
+          notifyListeners();
+        }
+      },
+      cells: [
+        DataCell(Text(row.name)),
+        DataCell(Text(row.weight.toString())),
+        DataCell(Text(row.percentLeft.toString())),
+      ],
+    );
+  }
+
+  @override
+  int get rowCount => rows.length;
+
+  @override
+  bool get isRowCountApproximate => false;
+
+  @override
+  int get selectedRowCount => _selectedCount;
 }
