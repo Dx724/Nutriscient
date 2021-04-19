@@ -95,7 +95,7 @@ class HX711:
         return float(m) / self.GRAM
 
     def tare(self, times=15):
-        self.set_offset(self.read_average(times))
+        self.set_offset(self._read_average(times))
 
     def set_gram(self, amt):
         self.GRAM = amt
