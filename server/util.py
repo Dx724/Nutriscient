@@ -28,7 +28,7 @@ def get_ingredient_nutrition(ingredient_id=1):
         if k.lower() not in [i.lower() for i in dv.keys()]:
             print(f'Not found: {k}: {v}')
         else:
-            data_cleaned[k] = round(v / 1000, 5)
+            data_cleaned[k] = v
     return name, data_cleaned
 
 
