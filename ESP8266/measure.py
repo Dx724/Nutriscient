@@ -62,8 +62,8 @@ def button_cb(pin):
 btn_b.irq(trigger=machine.Pin.IRQ_FALLING, handler=button_cb)
 btn_c.irq(trigger=machine.Pin.IRQ_FALLING, handler=button_cb)
 
-RISE_THRESHOLD = 40000
-FALL_THRESHOLD = 20000
+RISE_THRESHOLD = 4000
+FALL_THRESHOLD = 2000
 SAME_THRESHOLD = 1000
 AVG_THRESHOLD = 5000
 state = State.LOW
