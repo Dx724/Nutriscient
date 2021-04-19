@@ -2,6 +2,7 @@ import 'package:nutriscient/ui/nutriscient_app_theme.dart';
 import 'package:nutriscient/ui/ui_view/search_box_view.dart';
 import 'package:nutriscient/ui/ui_view/title_view.dart';
 import 'package:nutriscient/ui/ui_view/search_result_view.dart';
+import 'package:nutriscient/util/spoonacular_api.dart';
 import 'package:flutter/material.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -66,7 +67,9 @@ class _RegisterScreenState extends State<RegisterScreen>
             curve:
                 Interval((1 / count) * 0, 1.0, curve: Curves.fastOutSlowIn))),
         animationController: widget.animationController,
-        callback: () {debugPrint("Show help");},
+        callback: () {
+          debugPrint("Show help");
+        },
       ),
     );
 
@@ -75,31 +78,68 @@ class _RegisterScreenState extends State<RegisterScreen>
         animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
             parent: widget.animationController,
             curve:
-            Interval((1 / count) * 1, 1.0, curve: Curves.fastOutSlowIn))),
+                Interval((1 / count) * 1, 1.0, curve: Curves.fastOutSlowIn))),
         animationController: widget.animationController,
-        callback: (String searchTxt) {debugPrint(searchTxt);},
+        callback: (String searchTxt) {
+          search(searchTxt);
+        },
       ),
     );
+  }
 
-    listViews.add(
-      SearchResultView(
-        mainScreenAnimation: Tween<double>(begin: 0.0, end: 1.0).animate(
-            CurvedAnimation(
-                parent: widget.animationController,
-                curve: Interval((1 / count) * 2, 1.0,
-                    curve: Curves.fastOutSlowIn))),
-        mainScreenAnimationController: widget.animationController,
-        callback: resultSelected,
-      ),
-    );
+  void search(String searchText) async {
+    var results = await searchIngredient(searchText);
+    if (results.length != 0)
+      addSearchResult(results);
+    else
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content:
+                  Text("Cannot find $searchText\n\nPress anywhere to continue"),
+            );
+          });
   }
 
   void resultSelected(int index) {
     debugPrint("User selected $index");
   }
 
-  void addSearchResult() {
+  void addSearchResult(List results) {
+    List<String> imageUrls = List<String>.generate(
+      results.length,
+      (int index) {
+        return 'https://spoonacular.com/cdn/ingredients_100x100/${results[index]['image']}';
+      },
+    );
 
+    List<String> imageCaptions =
+        List<String>.generate(results.length, (int index) {
+      return results[index]['name'];
+    });
+
+    List<int> itemIds = List<int>.generate(results.length, (int index) {
+      return results[index]['id'];
+    });
+
+    const int count = 3;
+    setState(() {
+      listViews.add(
+        SearchResultView(
+          mainScreenAnimation: Tween<double>(begin: 0.0, end: 1.0).animate(
+              CurvedAnimation(
+                  parent: widget.animationController,
+                  curve: Interval((1 / count) * 2, 1.0,
+                      curve: Curves.fastOutSlowIn))),
+          mainScreenAnimationController: widget.animationController,
+          callback: resultSelected,
+          imageUrls: imageUrls,
+          imageCaptions: imageCaptions,
+          itemIds: itemIds,
+        ),
+      );
+    });
   }
 
   Future<bool> getData() async {
@@ -125,7 +165,6 @@ class _RegisterScreenState extends State<RegisterScreen>
       ),
     );
   }
-
 
   Widget getMainListViewUI() {
     return FutureBuilder<bool>(
