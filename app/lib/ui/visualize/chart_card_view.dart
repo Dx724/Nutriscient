@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
 
 import 'package:nutriscient/main.dart';
 import 'package:nutriscient/ui/nutriscient_app_theme.dart';
-import 'package:nutriscient/ui/models/pie_chart_data.dart';
 
-class PieChartView extends StatelessWidget {
+class ChartCardView extends StatelessWidget {
   final AnimationController animationController;
   final Animation animation;
   final Widget chart;
 
-  PieChartView({Key key, this.animationController, this.animation, this.chart})
+  ChartCardView({Key key, this.animationController, this.animation, this.chart})
       : super(key: key);
 
   @override
@@ -53,14 +51,14 @@ class PieChartView extends StatelessWidget {
                             children: <Widget>[
                               Padding(
                                 padding: const EdgeInsets.only(
-                                    left: 68, bottom: 12, right: 16, top: 12),
+                                    left: 12, bottom: 12, right: 12, top: 12),
                                 child: Text(
-                                  'Prepare your stomach for lunch with one or two glass of water',
-                                  textAlign: TextAlign.left,
+                                  'Text Here',
+                                  textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontFamily: NutriscientAppTheme.fontName,
                                     fontWeight: FontWeight.w500,
-                                    fontSize: 14,
+                                    fontSize: 20,
                                     letterSpacing: 0.0,
                                     color: NutriscientAppTheme.nearlyDarkBlue
                                         .withOpacity(0.6),
