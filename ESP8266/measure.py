@@ -87,7 +87,7 @@ SAME_THRESHOLD = 1000
 AVG_THRESHOLD = 5000
 CALIB_WEIGHTS = [20, 50] # in grams
 NICKEL_WEIGHT = 5 # in grams
-NUM_AVG_READINGS = 3
+NUM_AVG_READINGS = 4
 NUM_TAG_TRIES = 10
 TAP_DURATION_MIN = 50 # in milliseconds
 TAP_DURATION_MAX = 300 # in milliseconds
@@ -215,7 +215,7 @@ def on_clear():
 def on_measure(m):
     print("Measurement: {}".format(m))
     print("Tag: {}".format(read_tag()))
-    oled_text("Weight: {}g".format(round(hx.to_grams(m), 2)), "ID: {}".format(get_uid()))
+    oled_text("Weight: {:.3f}kg".format(round(hx.to_grams(m)/1000, 3)), "ID: {}".format(get_uid()))
     oled.invert(1)
 
 def on_tap():
@@ -258,7 +258,7 @@ while True:
         if all(conds):
             print("Steady reading: {}".format(r))
             print("Grams: {}".format(hx.to_grams(r)))
-            measurement_cb(r)
+            measurement_cb(sum(read_buffer[-2:])/2.0) # Pass in average of last two
             state = State.STEADY
     elif state == State.STEADY:
         if r < FALL_THRESHOLD:
