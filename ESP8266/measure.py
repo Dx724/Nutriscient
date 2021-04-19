@@ -89,9 +89,12 @@ CALIB_WEIGHTS = [20, 50] # in grams
 NICKEL_WEIGHT = 5 # in grams
 NUM_AVG_READINGS = 3
 NUM_TAG_TRIES = 10
+TAP_DURATION_MIN = 50 # in milliseconds
 TAP_DURATION_MAX = 300 # in milliseconds
+DOUBLE_TAP_DUR_MIN = 200 # in milliseconds
 DOUBLE_TAP_DUR_MAX = 750 # in milliseconds
 CALIB_FILE = "nutriscient.calibration"
+MOV_AVG_FACTOR = 0.35
 ### Configuration End ###
 
 ### State Start ###
@@ -104,6 +107,8 @@ state = State.LOW
 read_buffer = []
 last_tap_time = time.ticks_ms()
 tap_timer = time.ticks_ms()
+tap_state = State.LOW
+moving_average = None
 ### State End ###
 
 ### Steady Conditions Start ###
@@ -153,8 +158,10 @@ def calib_2(m):
     double_tap_cb = calib_start
 
 def calib_complete(loaded_from_file):
-    global calib_data
+    global calib_data, moving_average, tap_state
     tare_scale(calib_data)
+    moving_average = hx.read()
+    tap_state = State.LOW
     oled_text("Calib. Loaded" if loaded_from_file else "Calib. Complete", "ID: {}".format(get_uid()))
 
 def store_calibration():
@@ -213,7 +220,8 @@ def on_measure(m):
 def on_tap():
     global last_tap_time
     t = time.ticks_ms()
-    if (t - last_tap_time) < DOUBLE_TAP_DUR_MAX:
+    #print("DURDD", t - last_tap_time)
+    if DOUBLE_TAP_DUR_MIN < (t - last_tap_time) < DOUBLE_TAP_DUR_MAX:
         double_tap_cb()
     last_tap_time = t
     
@@ -239,14 +247,9 @@ while True:
     if state == State.LOW:
         if r > RISE_THRESHOLD:
             read_buffer.clear()
-            tap_timer = time.ticks_ms()
             state = State.HIGH
     elif state == State.HIGH:
         if r < FALL_THRESHOLD:
-            tap_duration = time.ticks_ms() - tap_timer
-            if tap_duration < TAP_DURATION_MAX:
-                tap_cb()
-                
             state = State.LOW
             
         read_buffer.append(r)
@@ -260,6 +263,22 @@ while True:
         if r < FALL_THRESHOLD:
             s2l_cb()
             state = State.LOW
+
+    # The tap input is handled with its own dynamically-updating "tare"
+    # This is done to ensure that taps can be detected even when
+    # calibration was performed incorrectly, allowing for recovery
+    # from such a state.
+    moving_average += (r - moving_average) * MOV_AVG_FACTOR
+    #print("TAPDEBUG", moving_average, tap_state)
+    if tap_state == State.LOW and r > moving_average + RISE_THRESHOLD:
+        tap_timer = time.ticks_ms()
+        tap_state = State.HIGH
+    elif tap_state == State.HIGH and r < moving_average + FALL_THRESHOLD:
+        tap_duration = time.ticks_ms() - tap_timer
+        #print("DUR", tap_duration)
+        if TAP_DURATION_MIN < tap_duration < TAP_DURATION_MAX:
+            tap_cb()
+        tap_state = State.LOW
 
     time.sleep_ms(10)
 
