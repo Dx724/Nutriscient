@@ -2,10 +2,11 @@ import json
 import traceback
 from flask import Flask, make_response, request
 
-from util import get_ingredient_nutrition
+from util import get_ingredient_nutrition, RFID_Database, Nutrition_Database
 
 app = Flask(__name__)
-
+rfid_db = RFID_Database()
+nutrition_db = Nutrition_Database()
 
 @app.route('/')
 def hello_world():
@@ -41,17 +42,21 @@ def add_data():
 @app.route('/label_rfid', methods=['POST'])
 def label_rfid():
     """ Add record in database to correspond RFID with actual food item """
-    params = request.values
+    params = json.loads(request.json)
+    print(params.keys())
     if all([i in params.keys() for i in ['Client-Id', 'RFID-Id', 'Ingredient-Id']]):
         esp_id, rfid, ingredient_id = params['Client-Id'], params['RFID-Id'], params['Ingredient-Id']
 
+        print("getting nutrition info")
         nutrition = get_ingredient_nutrition(ingredient_id)
         if nutrition is not None:
             ingredient_name, ingredient_nutrition = nutrition
             # TODO: Add to database
             # db_name[esp_id][rfid] = ingredient_name
             # db_nutrition[esp_id][rfid] = ingredient_nutrition
-            raise NotImplementedError
+            #raise NotImplementedError
+            rfid_db.insert(esp_id, rfid, ingredient_name)
+
             return make_response('OK')
         else:
             return make_response(f'Error finding nutrition info for id={ingredient_id}', 500)
@@ -93,4 +98,4 @@ def get_all_ingredient_weight():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000)
+    app.run(host='0.0.0.0', port=8080)
