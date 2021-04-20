@@ -20,7 +20,24 @@ def get_db(esp_id):
     return db_root.child(esp_id)
 
 
+def push_notification(title, body, field_a, topic='fcm_test'):
+    message = messaging.Message(
+        notification=messaging.Notification(
+            title=title,
+            body=body,
+        ),
+        data={
+            'Field-A': field_a,
+            "click_action": "FLUTTER_NOTIFICATION_CLICK"
+        },
+        topic=topic,
+    )
+    return 'Sent message ' + str(messaging.send(message))
+
+
 if __name__ == '__main__':
     client_id = b'}\r\x83\x00'  # machine.unique_id()
     client_id = '{:02x}{:02x}{:02x}{:02x}'.format(client_id[0], client_id[1], client_id[2], client_id[3])
     db = get_db(client_id)
+
+    print(push_notification("Title", "Body", "some data"))
