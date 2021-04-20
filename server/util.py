@@ -1,6 +1,7 @@
 import requests
 import time
-from cred import spoonacular_api_key
+import json
+# from cred import spoonacular_api_key
 from nutrition_dv import dv
 
 from pymongo import MongoClient
@@ -18,10 +19,10 @@ class RFID_Database:
         post = {'rfid' : rfid,
                 'ingredient_name' : ingredient_name,
                 'time' : time.time()}
-        if collection.count_documents({'rfid' : rfid}) != 0:
+        if collection.count_documents({'rfid' : rfid, 'ingredient_name' : ''}) != 0:
             """ Completing registration for {rfid} """
-            collection.replace_one({'rfid' : rfid}, post)
-        else:
+            collection.replace_one({'rfid' : rfid, 'ingredient_name' : ''}, post)
+        elif collection.count_documents({'rfid' : rfid}) == 0:
             collection.insert_one(post)
 
     def insert_incomplete(self, esp_id, rfid):
@@ -30,18 +31,24 @@ class RFID_Database:
         post = {'rfid' : rfid,
                 'ingredient_name' : '',
                 'time' : time.time()}
-        collection.insert_one(post)
+        if collection.count_documents({'rfid' : rfid}) == 0:
+            collection.insert_one(post)
 
     def find_unregistered(self, esp_id):
         col_name = 'ESP' + esp_id
         collection = self.db[col_name]
         if collection.count_documents({}) == 0:
-            raise FileNotFoundError(f'ESP {esp_id} has no RFID yet!')
+            collection_not_found = f'ESP {esp_id} do not exist'
+            return collection_not_found
         """ return most recent RFID that isn't registered with an ingredient """
         post_cursor = collection.find({'ingredient_name' : ''}).sort('_id', -1).limit(1)
-        post_list = list(post_cursor)
-        post_json = dumps(post_list)
-        return post_json
+        if post_cursor.count() == 0:
+            all_registered = 'all registered'
+            return all_registered
+        post = post_cursor[0]
+        del post['_id']
+        del post['ingredient_name']
+        return post
 
 
 class Nutritions_Database:
@@ -52,9 +59,10 @@ class Nutritions_Database:
     def insert(self, esp_id, rfid, nutrition):
         col_name = 'ESP' + esp_id
         collection = self.db[col_name]
-        post = {'rfid' : rfid,
-                'nutrition' : nutrition}
-        collection.insert_one(post)
+        if collection.find({'rfid' : rfid}).count() == 0:
+            post = {'rfid' : rfid,
+                    'nutrition' : nutrition}
+            collection.insert_one(post)
 
 
 class Weight_Database:
@@ -77,7 +85,7 @@ def get_ingredient_nutrition(ingredient_id=1):
     # Step 2: Call API with the ingredient_id, 1 gram, get and parse a list of nutrition
     # https://spoonacular.com/food-api/docs#Get-Ingredient-Information
     url = 'https://api.spoonacular.com/food/ingredients/{ingredient_id}/information?' \
-          'amount=1000&unit=grams&apiKey={api_key}'.format(ingredient_id=ingredient_id, api_key=spoonacular_api_key)
+          'amount=1000&unit=grams&apiKey={api_key}'.format(ingredient_id=ingredient_id, api_key='262810135e8249fdaceee2c396c7f0ec')
 
     response = requests.get(url)
     if response.status_code != 200:
