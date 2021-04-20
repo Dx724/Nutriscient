@@ -22,6 +22,10 @@ class _RegisterScreenState extends State<RegisterScreen>
   final ScrollController scrollController = ScrollController();
   double topBarOpacity = 0.0;
 
+  List<String> imageUrls, imageCaptions;
+  List<int> itemIds;
+  Widget searchResultViewWidget;
+
   @override
   void initState() {
     topBarAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
@@ -88,9 +92,10 @@ class _RegisterScreenState extends State<RegisterScreen>
   }
 
   void search(String searchText) async {
+    print("Search");
     var results = await searchIngredient(searchText);
     if (results.length != 0)
-      addSearchResult(results);
+      buildSearchResults(results);
     else
       showDialog(
           context: context,
@@ -106,25 +111,28 @@ class _RegisterScreenState extends State<RegisterScreen>
     debugPrint("User selected $index");
   }
 
-  void addSearchResult(List results) {
-    List<String> imageUrls = List<String>.generate(
-      results.length,
-      (int index) {
-        return 'https://spoonacular.com/cdn/ingredients_100x100/${results[index]['image']}';
-      },
-    );
+  void buildSearchResults(List results) {
+      imageUrls = List<String>.generate(
+        results.length,
+            (int index) {
+          return 'https://spoonacular.com/cdn/ingredients_100x100/${results[index]['image']}';
+        },
+      );
 
-    List<String> imageCaptions =
-        List<String>.generate(results.length, (int index) {
-      return results[index]['name'];
-    });
+      imageCaptions =
+      List<String>.generate(results.length, (int index) {
+        return results[index]['name'];
+      });
 
-    List<int> itemIds = List<int>.generate(results.length, (int index) {
-      return results[index]['id'];
-    });
+      itemIds = List<int>.generate(results.length, (int index) {
+        return results[index]['id'];
+      });
 
     const int count = 3;
     setState(() {
+      if (listViews.length == 3) {
+        listViews.removeAt(2);
+      }
       listViews.add(
         SearchResultView(
           mainScreenAnimation: Tween<double>(begin: 0.0, end: 1.0).animate(
