@@ -26,9 +26,11 @@ def push_notification(title, body, field_a, topic='fcm_test'):
             title=title,
             body=body,
         ),
+        android=messaging.AndroidConfig(
+            priority='high'
+        ),
         data={
             'Field-A': field_a,
-            "click_action": "FLUTTER_NOTIFICATION_CLICK"
         },
         topic=topic,
     )
