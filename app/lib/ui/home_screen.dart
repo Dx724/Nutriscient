@@ -1,6 +1,8 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:nutriscient/ui/models/tabIcon_data.dart';
 import 'package:nutriscient/ui/traning/training_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:nutriscient/util/fcm.dart';
 import 'bottom_navigation_view/bottom_bar_view.dart';
 import 'nutriscient_app_theme.dart';
 
@@ -11,6 +13,9 @@ import 'visualize/visualize_screen.dart';
 import 'setting/setting_screen.dart';
 
 class NutriscientHomeScreen extends StatefulWidget {
+  const NutriscientHomeScreen({Key key, this.redirectTo}) : super(key: key);
+  final String redirectTo;
+
   @override
   _NutriscientHomeScreenState createState() => _NutriscientHomeScreenState();
 }
@@ -34,8 +39,17 @@ class _NutriscientHomeScreenState extends State<NutriscientHomeScreen>
 
     animationController = AnimationController(
         duration: const Duration(milliseconds: 600), vsync: this);
-    tabBody = MyDiaryScreen(animationController: animationController);
+    if (widget.redirectTo == null)
+      tabBody = MyDiaryScreen(animationController: animationController);
+    else if (widget.redirectTo == 'register')
+      tabBody = RegisterScreen(animationController: animationController);
+    else
+      throw Exception('Invalid redirectTo parameter: ${widget.redirectTo}');
+
     super.initState();
+
+    setupFcmCallbacks(context);
+    updatePushNotiSubscription(true);
   }
 
   @override
