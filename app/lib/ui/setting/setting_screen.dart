@@ -1,4 +1,5 @@
 import 'package:nutriscient/ui/nutriscient_app_theme.dart';
+import 'package:nutriscient/ui/setting/settings_view.dart';
 import 'package:nutriscient/ui/ui_view/title_view.dart';
 import 'package:flutter/material.dart';
 
@@ -65,6 +66,20 @@ class _SettingScreenState extends State<SettingScreen>
                 Interval((1 / count) * 0, 1.0, curve: Curves.fastOutSlowIn))),
         animationController: widget.animationController,
         callback: () {debugPrint("buttonCallback");},
+      ),
+    );
+
+    listViews.add(
+      EditBoxView(
+        animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+            parent: widget.animationController,
+            curve:
+            Interval((1 / count) * 0, 1.0, curve: Curves.fastOutSlowIn))),
+        animationController: widget.animationController,
+        callback: () {debugPrint("buttonCallback");},
+        title: 'Title',
+        defaultValue: 'defaultValue',
+        hintText: 'hintText',
       ),
     );
   }
@@ -163,7 +178,7 @@ class _SettingScreenState extends State<SettingScreen>
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Text(
-                                  'Title Here',
+                                  'Settings',
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
                                     fontFamily: NutriscientAppTheme.fontName,
