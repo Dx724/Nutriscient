@@ -35,3 +35,14 @@ Future<void> setConstant(String key, var value) async {
     throw Exception('value type not supported!');
   }
 }
+
+Future<void> saveAllConstants() async {
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  final SharedPreferences prefs = await _prefs;
+
+  assert(kBackend != null);
+  assert(kScaleId != null);
+
+  prefs.setString('kBackend', kBackend);
+  prefs.setString('kScaleId', kScaleId);
+}

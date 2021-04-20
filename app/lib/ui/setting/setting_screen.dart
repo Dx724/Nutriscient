@@ -1,6 +1,7 @@
+import 'package:nutriscient/ui/common_widgets.dart';
 import 'package:nutriscient/ui/nutriscient_app_theme.dart';
 import 'package:nutriscient/ui/setting/settings_view.dart';
-import 'package:nutriscient/ui/ui_view/title_view.dart';
+import 'package:nutriscient/util/constants.dart';
 import 'package:flutter/material.dart';
 
 class SettingScreen extends StatefulWidget {
@@ -55,19 +56,6 @@ class _SettingScreenState extends State<SettingScreen>
 
   void addAllListData() {
     const int count = 1;
-
-    listViews.add(
-      TitleView(
-        titleTxt: 'TitleView',
-        subTxt: 'Details',
-        animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-            parent: widget.animationController,
-            curve:
-                Interval((1 / count) * 0, 1.0, curve: Curves.fastOutSlowIn))),
-        animationController: widget.animationController,
-        callback: () {debugPrint("buttonCallback");},
-      ),
-    );
 
     listViews.add(
       EditBoxView(
@@ -190,6 +178,9 @@ class _SettingScreenState extends State<SettingScreen>
                                 ),
                               ),
                             ),
+                            buildButton("Save", () async {
+                              await saveAllConstants();
+                            })
                           ],
                         ),
                       )
