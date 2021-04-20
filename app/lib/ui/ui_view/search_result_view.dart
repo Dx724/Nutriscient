@@ -32,10 +32,6 @@ class _SearchResultViewState extends State<SearchResultView>
   void initState() {
     animationController = AnimationController(
         duration: const Duration(milliseconds: 2000), vsync: this);
-    callback = widget.callback;
-    imageUrls = widget.imageUrls;
-    imageCaptions = widget.imageCaptions;
-    itemIds = widget.itemIds;
     super.initState();
   }
 
@@ -47,6 +43,11 @@ class _SearchResultViewState extends State<SearchResultView>
 
   @override
   Widget build(BuildContext context) {
+    callback = widget.callback;
+    imageUrls = widget.imageUrls;
+    imageCaptions = widget.imageCaptions;
+    itemIds = widget.itemIds;
+    print("Build - $imageCaptions");
     double aspectRatio = 2 / ((imageUrls.length / 2).ceil()); // 2 column, len/2 rows
     return AnimatedBuilder(
       animation: widget.mainScreenAnimationController,
