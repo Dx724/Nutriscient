@@ -66,16 +66,12 @@ class _IngredientsListScreenState extends State<IngredientsListScreen>
 
     listViews.add(
       TitleView(
-        titleTxt: 'TitleView',
-        subTxt: 'Details',
+        titleTxt: 'Time for some restocking?',
         animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
             parent: widget.animationController,
             curve:
                 Interval((1 / count) * 0, 1.0, curve: Curves.fastOutSlowIn))),
         animationController: widget.animationController,
-        callback: () {
-          debugPrint("buttonCallback");
-        },
       ),
     );
 

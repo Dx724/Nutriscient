@@ -45,38 +45,7 @@ class TitleView extends StatelessWidget {
                         ),
                       ),
                     ),
-                    InkWell(
-                      highlightColor: Colors.transparent,
-                      borderRadius: BorderRadius.all(Radius.circular(4.0)),
-                      onTap: () {this.callback();},
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 8),
-                        child: Row(
-                          children: <Widget>[
-                            Text(
-                              subTxt,
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                fontFamily: NutriscientAppTheme.fontName,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 16,
-                                letterSpacing: 0.5,
-                                color: NutriscientAppTheme.nearlyDarkBlue,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 38,
-                              width: 26,
-                              child: Icon(
-                                Icons.arrow_forward,
-                                color: NutriscientAppTheme.darkText,
-                                size: 18,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
+                    _buildButton(),
                   ],
                 ),
               ),
@@ -85,5 +54,44 @@ class TitleView extends StatelessWidget {
         );
       },
     );
+  }
+
+  Widget _buildButton() {
+    if (subTxt != "") {
+      return InkWell(
+        highlightColor: Colors.transparent,
+        borderRadius: BorderRadius.all(Radius.circular(4.0)),
+        onTap: () {this.callback();},
+        child: Padding(
+          padding: const EdgeInsets.only(left: 8),
+          child: Row(
+            children: <Widget>[
+              Text(
+                subTxt,
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontFamily: NutriscientAppTheme.fontName,
+                  fontWeight: FontWeight.normal,
+                  fontSize: 16,
+                  letterSpacing: 0.5,
+                  color: NutriscientAppTheme.nearlyDarkBlue,
+                ),
+              ),
+              SizedBox(
+                height: 38,
+                width: 26,
+                child: Icon(
+                  Icons.arrow_forward,
+                  color: NutriscientAppTheme.darkText,
+                  size: 18,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else {
+      return Container();
+    }
   }
 }

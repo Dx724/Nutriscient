@@ -60,7 +60,7 @@ class _RegisterScreenState extends State<RegisterScreen>
 
     listViews.add(
       TitleView(
-        titleTxt: 'Please put the ingredient on the scale',
+        titleTxt: 'Adding a new ingredient',
         subTxt: 'Help',
         animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
             parent: widget.animationController,
