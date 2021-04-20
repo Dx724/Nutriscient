@@ -92,12 +92,12 @@ class _IngredientsListScreenState extends State<IngredientsListScreen>
   }
 
   Future<bool> getData() async {
-    await Future<dynamic>.delayed(const Duration(milliseconds: 500));
+    await getIngredientData();
     return true;
   }
 
   Future<List<IngredientRow>> getIngredientData() async {
-    await Future<dynamic>.delayed(const Duration(milliseconds: 50));
+    await Future<dynamic>.delayed(const Duration(milliseconds: 500));
     // TODO: Call /get_ingredients
     return [
       IngredientRow('salt', 300, 30),
