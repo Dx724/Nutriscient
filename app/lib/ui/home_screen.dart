@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:nutriscient/ui/feed/FeedScreen.dart';
 import 'package:nutriscient/ui/models/tabIcon_data.dart';
 import 'package:nutriscient/ui/traning/training_screen.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,6 @@ import 'package:nutriscient/util/fcm.dart';
 import 'bottom_navigation_view/bottom_bar_view.dart';
 import 'nutriscient_app_theme.dart';
 
-import 'my_diary/my_diary_screen.dart';
 import 'list/ingredients_list_screen.dart';
 import 'register/register_screen.dart';
 import 'visualize/visualize_screen.dart';
@@ -40,7 +40,7 @@ class _NutriscientHomeScreenState extends State<NutriscientHomeScreen>
     animationController = AnimationController(
         duration: const Duration(milliseconds: 600), vsync: this);
     if (widget.redirectTo == null)
-      tabBody = MyDiaryScreen(animationController: animationController);
+      tabBody = FeedScreen(animationController: animationController);
     else if (widget.redirectTo == 'register')
       tabBody = RegisterScreen(animationController: animationController);
     else
@@ -114,7 +114,7 @@ class _NutriscientHomeScreenState extends State<NutriscientHomeScreen>
                 switch (index) {
                   case 0:
                     tabBody =
-                        MyDiaryScreen(animationController: animationController);
+                        FeedScreen(animationController: animationController);
                     break;
 
                   case 1:
