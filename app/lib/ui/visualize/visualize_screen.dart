@@ -24,7 +24,8 @@ class _VisualizeScreenState extends State<VisualizeScreen>
   final ScrollController scrollController = ScrollController();
   double topBarOpacity = 0.0;
 
-  List<charts.Series<Chart2DModel, int>> pieChartData;
+  List<charts.Series<PieChartModel, int>> pieChartData;
+  List<charts.Series<BarChartModel, String>> barChartData;
 
   @override
   void initState() {
@@ -33,7 +34,9 @@ class _VisualizeScreenState extends State<VisualizeScreen>
             parent: widget.animationController,
             curve: Interval(0, 0.5, curve: Curves.fastOutSlowIn)));
 
+    // TODO: Replace with API Calls
     pieChartData = createSamplePieChartData();
+    barChartData = createSampleBarChartData();
     addAllListData();
 
     scrollController.addListener(() {
@@ -62,7 +65,7 @@ class _VisualizeScreenState extends State<VisualizeScreen>
   }
 
   void addAllListData() {
-    const int count = 1;
+    const int count = 3;
 
     listViews.add(
       TitleView(
@@ -73,28 +76,63 @@ class _VisualizeScreenState extends State<VisualizeScreen>
             curve:
                 Interval((1 / count) * 0, 1.0, curve: Curves.fastOutSlowIn))),
         animationController: widget.animationController,
-        callback: () {debugPrint("buttonCallback");},
+        callback: () {
+          debugPrint("buttonCallback");
+        },
       ),
     );
 
-    Widget chart = charts.PieChart(
+    Widget pieChart = charts.PieChart(
       pieChartData,
       animate: true,
+      // defaultRenderer: new charts.ArcRendererConfig(
+      //     arcRendererDecorators: [
+      //       new charts.ArcLabelDecorator(
+      //           labelPosition:
+      //           charts.ArcLabelPosition.auto)
+      //     ]),
       defaultRenderer: new charts.ArcRendererConfig(
+          arcWidth: 60,
           arcRendererDecorators: [
             new charts.ArcLabelDecorator(
-                labelPosition:
-                charts.ArcLabelPosition.auto)
+                labelPosition: charts.ArcLabelPosition.auto)
           ]),
+    );
+
+    Widget barChart = new charts.OrdinalComboChart(
+      barChartData,
+      animate: true,
+      // Configure the default renderer as a bar renderer.
+      defaultRenderer: new charts.BarRendererConfig(
+          groupingType: charts.BarGroupingType.grouped),
+      // Custom renderer configuration for the line series. This will be used for
+      // any series that does not define a rendererIdKey.
+      customSeriesRenderers: [
+        new charts.LineRendererConfig(
+            // ID used to link series to this renderer.
+            customRendererId: 'customLine')
+      ],
     );
 
     listViews.add(
       ChartCardView(
         animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
             parent: widget.animationController,
-            curve: Interval((1 / count) * 0, 1.0, curve: Curves.fastOutSlowIn))),
+            curve:
+                Interval((1 / count) * 1, 1.0, curve: Curves.fastOutSlowIn))),
         animationController: widget.animationController,
-        chart: chart,
+        chart: pieChart,
+      ),
+    );
+
+    listViews.add(
+      ChartCardView(
+        animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+            parent: widget.animationController,
+            curve:
+                Interval((1 / count) * 2, 1.0, curve: Curves.fastOutSlowIn))),
+        animationController: widget.animationController,
+        chart: barChart,
       ),
     );
   }
