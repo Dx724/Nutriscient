@@ -27,7 +27,7 @@ class _VisualizeScreenState extends State<VisualizeScreen>
   Widget pieChart, barChart;
   List<charts.Series<PieChartModel, int>> pieChartData;
   List<charts.Series<BarChartModel, String>> barChartData;
-  String currentNutrient, pieChartTitle, barChartTitle;
+  String currentNutrient;
 
   @override
   void initState() {
@@ -40,8 +40,6 @@ class _VisualizeScreenState extends State<VisualizeScreen>
     pieChartData = createSamplePieChartData();
     barChartData = createSampleBarChartData();
     currentNutrient = "Sugar";
-    pieChartTitle = 'Daily $currentNutrient Source';
-    barChartTitle = 'Weekly $currentNutrient Consumption';
     addAllListData();
 
     scrollController.addListener(() {
@@ -70,9 +68,9 @@ class _VisualizeScreenState extends State<VisualizeScreen>
   }
 
   void selectedNutrient(String selectedNutrient) {
-    print("Should update plot");
     setState(() {
       currentNutrient = selectedNutrient;
+      rebuildCharts();
     });
   }
 
@@ -92,6 +90,11 @@ class _VisualizeScreenState extends State<VisualizeScreen>
       ),
     );
 
+    rebuildCharts();
+  }
+
+  void rebuildCharts() {
+    const int count = 3;
     pieChart = charts.PieChart(
       pieChartData,
       animate: true,
@@ -119,20 +122,26 @@ class _VisualizeScreenState extends State<VisualizeScreen>
       // any series that does not define a rendererIdKey.
       customSeriesRenderers: [
         new charts.LineRendererConfig(
-            // ID used to link series to this renderer.
+          // ID used to link series to this renderer.
             customRendererId: 'customLine')
       ],
     );
+
+    if (listViews.length == 3)
+      listViews.removeAt(2);
+
+    if (listViews.length == 2)
+      listViews.removeAt(1);
 
     listViews.add(
       ChartCardView(
         animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
             parent: widget.animationController,
             curve:
-                Interval((1 / count) * 1, 1.0, curve: Curves.fastOutSlowIn))),
+            Interval((1 / count) * 1, 1.0, curve: Curves.fastOutSlowIn))),
         animationController: widget.animationController,
         chart: pieChart,
-        title: pieChartTitle,
+        title: 'Daily $currentNutrient Source',
       ),
     );
 
@@ -141,10 +150,10 @@ class _VisualizeScreenState extends State<VisualizeScreen>
         animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
             parent: widget.animationController,
             curve:
-                Interval((1 / count) * 2, 1.0, curve: Curves.fastOutSlowIn))),
+            Interval((1 / count) * 2, 1.0, curve: Curves.fastOutSlowIn))),
         animationController: widget.animationController,
         chart: barChart,
-        title: barChartTitle,
+        title: 'Weekly $currentNutrient Consumption',
       ),
     );
   }
@@ -157,8 +166,6 @@ class _VisualizeScreenState extends State<VisualizeScreen>
 
   @override
   Widget build(BuildContext context) {
-    print("Build");
-    print("$currentNutrient");
     return Container(
       color: NutriscientAppTheme.background,
       child: Scaffold(
