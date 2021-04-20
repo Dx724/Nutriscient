@@ -59,6 +59,11 @@ List<charts.Series<BarChartModel, String>> createSampleBarChartData() {
     new BarChartModel('Sun', 80),
   ];
 
+  final line_100 = [
+    new BarChartModel('Mon', 100),
+    new BarChartModel('Sun', 100),
+  ];
+
   return [
     new charts.Series<BarChartModel, String>(
         id: 'Daily',
@@ -72,5 +77,12 @@ List<charts.Series<BarChartModel, String>> createSampleBarChartData() {
         domainFn: (BarChartModel data, _) => data.dayOfWeek,
         measureFn: (BarChartModel data, _) => data.y,
         data: lineData)..setAttribute(charts.rendererIdKey, 'customLine'),
+    new charts.Series<BarChartModel, String>(
+        id: '100%',
+        colorFn: (_, __) => charts.MaterialPalette.red.shadeDefault,
+        domainFn: (BarChartModel data, _) => data.dayOfWeek,
+        measureFn: (BarChartModel data, _) => data.y,
+        dashPatternFn: (BarChartModel data, _) => [2,2],
+        data: line_100)..setAttribute(charts.rendererIdKey, 'customLine'),
   ];
 }
