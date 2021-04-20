@@ -166,6 +166,7 @@ class _BottomBarViewState extends State<BottomBarView>
                           highlightColor: Colors.transparent,
                           focusColor: Colors.transparent,
                           onTap: () {
+                            setRemoveAllSelection(null);
                             widget.addClick();
                           },
                           child: Icon(
@@ -191,7 +192,7 @@ class _BottomBarViewState extends State<BottomBarView>
     setState(() {
       widget.tabIconsList.forEach((TabIconData tab) {
         tab.isSelected = false;
-        if (tabIconData.index == tab.index) {
+        if (tabIconData != null && tabIconData.index == tab.index) {
           tab.isSelected = true;
         }
       });
