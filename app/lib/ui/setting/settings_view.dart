@@ -2,6 +2,7 @@ import 'package:nutriscient/main.dart';
 import 'package:nutriscient/ui/nutriscient_app_theme.dart';
 import 'package:nutriscient/ui/common_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:nutriscient/util/constants.dart';
 
 class EditBoxView extends StatelessWidget {
   final AnimationController animationController;
@@ -43,13 +44,19 @@ class EditBoxView extends StatelessWidget {
                     buildTextField(
                         controller: controllerKBackend,
                         labelText: "Server",
-                        defaultText: "127.0.0.1",
-                        obscureText: false),
+                        defaultText: kBackend,
+                        obscureText: false,
+                        callback: (String value) {
+                          kBackend = value;
+                        }),
                     buildTextField(
                         controller: controllerKScaleId,
                         labelText: "Scale ID",
-                        defaultText: "abcd1234",
-                        obscureText: false),
+                        defaultText: kScaleId,
+                        obscureText: false,
+                        callback: (String value) {
+                          kScaleId = value;
+                        }),
                   ],
                 ),
               ),
