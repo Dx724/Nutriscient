@@ -122,6 +122,7 @@ class _VisualizeScreenState extends State<VisualizeScreen>
                 Interval((1 / count) * 1, 1.0, curve: Curves.fastOutSlowIn))),
         animationController: widget.animationController,
         chart: pieChart,
+        title: 'Daily Sugar Source',
       ),
     );
 
@@ -133,6 +134,7 @@ class _VisualizeScreenState extends State<VisualizeScreen>
                 Interval((1 / count) * 2, 1.0, curve: Curves.fastOutSlowIn))),
         animationController: widget.animationController,
         chart: barChart,
+        title: 'Weekly Sugar Consumption',
       ),
     );
   }
