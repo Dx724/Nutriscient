@@ -1,4 +1,5 @@
 import requests
+import time
 from cred import spoonacular_api_key
 from nutrition_dv import dv
 
@@ -15,15 +16,59 @@ class RFID_Database:
         col_name = 'ESP' + esp_id
         collection = self.db[col_name]
         post = {'rfid' : rfid,
-                'ingredient_name' : ingredient_name}
-        print(post)
-        post_id = collection.insert_one(post).inserted_id
-        print(f'Insert ID: {post_id}')
+                'ingredient_name' : ingredient_name,
+                'time' : time.time()}
+        if collection.count_documents({'rfid' : rfid}) != 0:
+            """ Completing registration for {rfid} """
+            collection.replace_one({'rfid' : rfid}, post)
+        else:
+            collection.insert_one(post)
 
-class Nutrition_Database:
+    def insert_incomplete(self, esp_id, rfid):
+        col_name = 'ESP' + esp_id
+        collection = self.db[col_name]
+        post = {'rfid' : rfid,
+                'ingredient_name' : '',
+                'time' : time.time()}
+        collection.insert_one(post)
+
+    def find_unregistered(self, esp_id):
+        col_name = 'ESP' + esp_id
+        collection = self.db[col_name]
+        if collection.count_documents({}) == 0:
+            raise FileNotFoundError(f'ESP {esp_id} has no RFID yet!')
+        """ return most recent RFID that isn't registered with an ingredient """
+        post_cursor = collection.find({'ingredient_name' : ''}).sort('_id', -1).limit(1)
+        post_list = list(post_cursor)
+        post_json = dumps(post_list)
+        return post_json
+
+
+class Nutritions_Database:
     def __init__(self):
         client = MongoClient('localhost', 27017)
-        self.db = client['Nutriscient_nutrition']
+        self.db = client['Nutriscient_nutritions']
+
+    def insert(self, esp_id, rfid, nutrition):
+        col_name = 'ESP' + esp_id
+        collection = self.db[col_name]
+        post = {'rfid' : rfid,
+                'nutrition' : nutrition}
+        collection.insert_one(post)
+
+
+class Weight_Database:
+    def __init__(self):
+        client = MongoClient('localhost', 27017)
+        self.db = client['Nutriscient_weight']
+
+    def insert(self, esp_id, rfid, weight):
+        col_name = 'ESP' + esp_id
+        collection = self.db[col_name]
+        post = {'rfid' : rfid,
+                'weight' : weight,
+                'time' : time.time()}
+        collection.insert_one(post)
 
 
 def get_ingredient_nutrition(ingredient_id=1):
