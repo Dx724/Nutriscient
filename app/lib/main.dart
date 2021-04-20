@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nutriscient/ui/nutriscient_app_theme.dart';
 
 import 'package:nutriscient/util/constants.dart';
 import 'package:nutriscient/ui/home_screen.dart';
@@ -25,6 +26,7 @@ class MyApp extends StatelessWidget {
       systemNavigationBarIconBrightness: Brightness.dark,
     ));
     return MaterialApp(
+      theme: nutriscientAppThemeData,
       debugShowCheckedModeBanner: false,
       home: NutriscientHomeScreen(),
     );

@@ -26,13 +26,15 @@ Widget buildTextField(
         if (callback != null) callback(value);
       },
       obscureText: obscureText,
+      style: NutriscientAppTheme.caption,
       decoration: InputDecoration(
           suffixIcon: null,
           contentPadding: EdgeInsets.only(bottom: 3),
           labelText: labelText,
           floatingLabelBehavior: FloatingLabelBehavior.always,
           // hintText: placeholder,
-          hintStyle: NutriscientAppTheme.caption),
+          // hintStyle: NutriscientAppTheme.caption
+        ),
     ),
   );
 

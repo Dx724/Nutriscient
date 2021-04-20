@@ -165,7 +165,7 @@ class AreaView extends StatelessWidget {
                       Text(
                         imageCaption,
                         textAlign: TextAlign.center,
-                        style: NutriscientAppTheme.captionBig,
+                        style: NutriscientAppTheme.imageCaption,
                       ),
                       Padding(
                         padding: EdgeInsets.only(top: 16, left: 16, right: 16),
