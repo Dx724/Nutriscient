@@ -22,12 +22,16 @@ class NutriscientAppTheme {
   static const String fontName = 'Roboto';
 
   static const TextTheme textTheme = TextTheme(
+    headline1: display1,
+    headline2: display1,
+    headline3: display1,
     headline4: display1,
     headline5: headline,
     headline6: title,
+    subtitle1: subtitle,
     subtitle2: subtitle,
-    bodyText2: body2,
     bodyText1: body1,
+    bodyText2: body2,
     caption: caption,
   );
 
@@ -92,6 +96,14 @@ class NutriscientAppTheme {
     fontFamily: fontName,
     fontWeight: FontWeight.normal,
     fontSize: 18,
+    letterSpacing: 0.5,
+    color: darkText,
+  );
+
+  static const TextStyle dropdownItem = TextStyle(
+    fontFamily: fontName,
+    fontWeight: FontWeight.w600,
+    fontSize: 16,
     letterSpacing: 0.5,
     color: darkText,
   );
