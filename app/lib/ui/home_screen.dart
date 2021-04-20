@@ -114,7 +114,7 @@ class _NutriscientHomeScreenState extends State<NutriscientHomeScreen>
                     break;
 
                   case 3:
-                    tabBody = TrainingScreen(
+                    tabBody = SettingScreen(
                         animationController: animationController);
                     break;
 
