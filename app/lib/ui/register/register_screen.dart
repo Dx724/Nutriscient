@@ -2,6 +2,8 @@ import 'package:nutriscient/ui/nutriscient_app_theme.dart';
 import 'package:nutriscient/ui/ui_view/search_box_view.dart';
 import 'package:nutriscient/ui/ui_view/title_view.dart';
 import 'package:nutriscient/ui/ui_view/search_result_view.dart';
+import 'package:nutriscient/util/backend.dart';
+import 'package:nutriscient/util/constants.dart';
 import 'package:nutriscient/util/spoonacular_api.dart';
 import 'package:flutter/material.dart';
 
@@ -26,13 +28,20 @@ class _RegisterScreenState extends State<RegisterScreen>
   List<int> itemIds;
   Widget searchResultViewWidget;
 
+  String rfidToRegister = '';
+
+  Future<void> checkUnregistered() async {
+    getUnregistered().then((result) {
+      print("$result");
+    });
+  }
+
   @override
   void initState() {
     topBarAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(
             parent: widget.animationController,
             curve: Interval(0, 0.5, curve: Curves.fastOutSlowIn)));
-    addAllListData();
 
     scrollController.addListener(() {
       if (scrollController.offset >= 24) {
@@ -57,6 +66,10 @@ class _RegisterScreenState extends State<RegisterScreen>
       }
     });
     super.initState();
+
+    checkUnregistered().then((value) {
+      addAllListData();
+    });
   }
 
   void addAllListData() {
@@ -107,8 +120,8 @@ class _RegisterScreenState extends State<RegisterScreen>
           });
   }
 
-  void resultSelected(int index) {
-    debugPrint("User selected $index");
+  void resultSelected(int index) async {
+    debugPrint("[$kScaleId]: RFID [$rfidToRegister] --> $index");
   }
 
   void buildSearchResults(List results) {

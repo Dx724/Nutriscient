@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-String kBackend_default = '127.0.0.1';
+String kBackend_default = 'http://ec2-35-153-232-54.compute-1.amazonaws.com:8000';
 String kBackend = '';
 
-String kScaleId_default = 'abcd1234';
+String kScaleId_default = '7d0d8300';
 String kScaleId = '';
 
 Future<void> loadConstants() async {
