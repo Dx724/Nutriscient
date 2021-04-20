@@ -2,6 +2,7 @@
     package="com.eecs4764.nutriscient.app">
    <application
         android:label="Nutriscient"
+        android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
