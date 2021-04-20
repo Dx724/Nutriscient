@@ -7,8 +7,14 @@ class ChartCardView extends StatelessWidget {
   final AnimationController animationController;
   final Animation animation;
   final Widget chart;
+  final String title;
 
-  ChartCardView({Key key, this.animationController, this.animation, this.chart})
+  ChartCardView(
+      {Key key,
+      this.animationController,
+      this.animation,
+      this.chart,
+      this.title})
       : super(key: key);
 
   @override
@@ -21,68 +27,59 @@ class ChartCardView extends StatelessWidget {
           child: new Transform(
             transform: new Matrix4.translationValues(
                 0.0, 30 * (1.0 - animation.value), 0.0),
-            child: Column(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(
-                      left: 24, right: 24, top: 0, bottom: 24),
-                  child: Stack(
-                    overflow: Overflow.visible,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(top: 16),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: HexColor("#D7E0F9"),
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(8.0),
-                                bottomLeft: Radius.circular(8.0),
-                                bottomRight: Radius.circular(8.0),
-                                topRight: Radius.circular(8.0)),
-                            boxShadow: <BoxShadow>[
-                              BoxShadow(
-                                  color:
-                                      NutriscientAppTheme.grey.withOpacity(0.2),
-                                  offset: Offset(1.1, 1.1),
-                                  blurRadius: 10.0),
-                            ],
-                          ),
-                          child: Column(
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 12, bottom: 12, right: 12, top: 12),
-                                child: Text(
-                                  'Text Here',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontFamily: NutriscientAppTheme.fontName,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 20,
-                                    letterSpacing: 0.0,
-                                    color: NutriscientAppTheme.nearlyDarkBlue
-                                        .withOpacity(0.6),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                // Chart width and height
-                                width: 0.8 * MediaQuery.of(context).size.width,
-                                height: 0.8 * MediaQuery.of(context).size.width,
-                                child: this.chart,
-                              )
-                            ],
-                          ),
+            child: Padding(
+              padding: const EdgeInsets.only(
+                  left: 24, right: 24, top: 24, bottom: 40),
+              child: Container(
+                decoration: _buildCardDecoration(),
+                child: Column(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 12, bottom: 12, right: 12, top: 12),
+                      child: Text(
+                        title,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: NutriscientAppTheme.fontName,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 20,
+                          letterSpacing: 0.0,
+                          color: NutriscientAppTheme.nearlyDarkBlue
+                              .withOpacity(0.6),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                    SizedBox(
+                      // Chart width and height
+                      width: 0.8 * MediaQuery.of(context).size.width,
+                      height: 0.8 * MediaQuery.of(context).size.width,
+                      child: this.chart,
+                    )
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         );
       },
     );
   }
+}
+
+BoxDecoration _buildCardDecoration() {
+  return BoxDecoration(
+    color: NutriscientAppTheme.background,
+    borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(8.0),
+        bottomLeft: Radius.circular(8.0),
+        bottomRight: Radius.circular(8.0),
+        topRight: Radius.circular(8.0)),
+    boxShadow: <BoxShadow>[
+      BoxShadow(
+          color: NutriscientAppTheme.grey.withOpacity(0.2),
+          offset: Offset(1.1, 1.1),
+          blurRadius: 10.0),
+    ],
+  );
 }
