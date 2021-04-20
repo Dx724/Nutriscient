@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class NutriscientAppTheme {
   NutriscientAppTheme._();
+
   static const Color nearlyWhite = Color(0xFFFAFAFA);
   static const Color white = Color(0xFFFFFFFF);
   static const Color background = Color(0xFFF2F3F8);
@@ -82,17 +83,40 @@ class NutriscientAppTheme {
   static const TextStyle caption = TextStyle(
     fontFamily: fontName,
     fontWeight: FontWeight.w400,
-    fontSize: 12,
+    fontSize: 16,
     letterSpacing: 0.2,
     color: lightText, // was lightText
   );
 
-  static const TextStyle captionBig = TextStyle(
+  static const TextStyle imageCaption = TextStyle(
     fontFamily: fontName,
     fontWeight: FontWeight.normal,
     fontSize: 18,
     letterSpacing: 0.5,
     color: darkText,
   );
-
 }
+
+ThemeData nutriscientAppThemeData = ThemeData.light().copyWith(
+    textTheme: NutriscientAppTheme.textTheme,
+    dataTableTheme: ThemeData.light().dataTableTheme.copyWith(
+          // dataRowColor: backgroundColor,
+          dataTextStyle: NutriscientAppTheme.body2,
+          // headingRowColor: backgroundColor,
+          headingTextStyle: NutriscientAppTheme.title,
+        ));
+
+// Color getColor(Set<MaterialState> states) {
+//   const Set<MaterialState> interactiveStates = <MaterialState>{
+//     MaterialState.pressed,
+//     MaterialState.hovered,
+//     MaterialState.focused,
+//   };
+//   if (states.any(interactiveStates.contains)) {
+//     return NutriscientAppTheme.dark_grey;
+//   }
+//   return NutriscientAppTheme.background;
+// }
+//
+// MaterialStateProperty<Color> backgroundColor =
+//     MaterialStateProperty.resolveWith(getColor);
