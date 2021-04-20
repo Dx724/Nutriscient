@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:nutriscient/main.dart';
 import 'package:nutriscient/ui/nutriscient_app_theme.dart';
+import 'package:nutriscient/ui/common_widgets.dart';
 
 class ChartCardView extends StatelessWidget {
   final AnimationController animationController;
@@ -31,7 +31,7 @@ class ChartCardView extends StatelessWidget {
               padding: const EdgeInsets.only(
                   left: 24, right: 24, top: 24, bottom: 40),
               child: Container(
-                decoration: _buildCardDecoration(),
+                decoration: buildCardDecoration(),
                 child: Column(
                   children: <Widget>[
                     Padding(
@@ -65,21 +65,4 @@ class ChartCardView extends StatelessWidget {
       },
     );
   }
-}
-
-BoxDecoration _buildCardDecoration() {
-  return BoxDecoration(
-    color: NutriscientAppTheme.background,
-    borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(8.0),
-        bottomLeft: Radius.circular(8.0),
-        bottomRight: Radius.circular(8.0),
-        topRight: Radius.circular(8.0)),
-    boxShadow: <BoxShadow>[
-      BoxShadow(
-          color: NutriscientAppTheme.grey.withOpacity(0.2),
-          offset: Offset(1.1, 1.1),
-          blurRadius: 10.0),
-    ],
-  );
 }

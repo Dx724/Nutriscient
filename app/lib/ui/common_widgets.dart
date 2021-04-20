@@ -28,13 +28,13 @@ Widget buildTextField(
       obscureText: obscureText,
       style: NutriscientAppTheme.caption,
       decoration: InputDecoration(
-          suffixIcon: null,
-          contentPadding: EdgeInsets.only(bottom: 3),
-          labelText: labelText,
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          // hintText: placeholder,
-          // hintStyle: NutriscientAppTheme.caption
-        ),
+        suffixIcon: null,
+        contentPadding: EdgeInsets.only(bottom: 3),
+        labelText: labelText,
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        // hintText: placeholder,
+        // hintStyle: NutriscientAppTheme.caption
+      ),
     ),
   );
 
@@ -134,5 +134,59 @@ Widget buildButton(String buttonText, Function callback) {
         ],
       ),
     ),
+  );
+}
+
+Widget buildDropdown(
+    {List<String> values, String dropdownValue, Function callback}) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+    height: 40.0,
+    decoration: buildCardDecoration(),
+    child: DropdownButtonHideUnderline(
+      child: DropdownButton<String>(
+        value: dropdownValue,
+        items: values
+            .map((e) => DropdownMenuItem(
+                  value: e,
+                  child: Row(
+                    children: <Widget>[
+                      // CircleAvatar(
+                      //   radius: 12.0,
+                      //   child: Image.asset(
+                      //     'assets/images/${e.toLowerCase()}_flag.png',
+                      //   ),
+                      // ),
+                      const SizedBox(width: 8.0),
+                      Text(
+                        e,
+                        style: NutriscientAppTheme.dropdownItem,
+                      )
+                    ],
+                  ),
+                ))
+            .toList(),
+        onChanged: (String value) {
+          callback(value);
+        },
+      ),
+    ),
+  );
+}
+
+BoxDecoration buildCardDecoration() {
+  return BoxDecoration(
+    color: NutriscientAppTheme.background,
+    borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(8.0),
+        bottomLeft: Radius.circular(8.0),
+        bottomRight: Radius.circular(8.0),
+        topRight: Radius.circular(8.0)),
+    boxShadow: <BoxShadow>[
+      BoxShadow(
+          color: NutriscientAppTheme.grey.withOpacity(0.2),
+          offset: Offset(1.1, 1.1),
+          blurRadius: 10.0),
+    ],
   );
 }

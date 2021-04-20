@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 
 import 'package:nutriscient/ui/nutriscient_app_theme.dart';
-import 'package:nutriscient/ui/ui_view/title_view.dart';
 import 'package:nutriscient/ui/visualize/chart_card_view.dart';
+import 'package:nutriscient/ui/visualize/select_nutrient_view.dart';
 
 import 'package:nutriscient/ui/models/chart_2d_data.dart';
 
@@ -24,8 +24,10 @@ class _VisualizeScreenState extends State<VisualizeScreen>
   final ScrollController scrollController = ScrollController();
   double topBarOpacity = 0.0;
 
+  Widget pieChart, barChart;
   List<charts.Series<PieChartModel, int>> pieChartData;
   List<charts.Series<BarChartModel, String>> barChartData;
+  String currentNutrient, pieChartTitle, barChartTitle;
 
   @override
   void initState() {
@@ -37,6 +39,9 @@ class _VisualizeScreenState extends State<VisualizeScreen>
     // TODO: Replace with API Calls
     pieChartData = createSamplePieChartData();
     barChartData = createSampleBarChartData();
+    currentNutrient = "Sugar";
+    pieChartTitle = 'Daily $currentNutrient Source';
+    barChartTitle = 'Weekly $currentNutrient Consumption';
     addAllListData();
 
     scrollController.addListener(() {
@@ -64,25 +69,30 @@ class _VisualizeScreenState extends State<VisualizeScreen>
     super.initState();
   }
 
+  void selectedNutrient(String selectedNutrient) {
+    print("Should update plot");
+    setState(() {
+      currentNutrient = selectedNutrient;
+    });
+  }
+
   void addAllListData() {
     const int count = 3;
 
     listViews.add(
-      TitleView(
-        titleTxt: 'TitleView',
-        subTxt: 'Details',
+      SelectNutrientView(
         animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
             parent: widget.animationController,
             curve:
                 Interval((1 / count) * 0, 1.0, curve: Curves.fastOutSlowIn))),
         animationController: widget.animationController,
-        callback: () {
-          debugPrint("buttonCallback");
-        },
+        values: ["Sugar", "Calories"],
+        value: currentNutrient,
+        callback: selectedNutrient,
       ),
     );
 
-    Widget pieChart = charts.PieChart(
+    pieChart = charts.PieChart(
       pieChartData,
       animate: true,
       // defaultRenderer: new charts.ArcRendererConfig(
@@ -99,7 +109,7 @@ class _VisualizeScreenState extends State<VisualizeScreen>
           ]),
     );
 
-    Widget barChart = new charts.OrdinalComboChart(
+    barChart = new charts.OrdinalComboChart(
       barChartData,
       animate: true,
       // Configure the default renderer as a bar renderer.
@@ -122,7 +132,7 @@ class _VisualizeScreenState extends State<VisualizeScreen>
                 Interval((1 / count) * 1, 1.0, curve: Curves.fastOutSlowIn))),
         animationController: widget.animationController,
         chart: pieChart,
-        title: 'Daily Sugar Source',
+        title: pieChartTitle,
       ),
     );
 
@@ -134,18 +144,21 @@ class _VisualizeScreenState extends State<VisualizeScreen>
                 Interval((1 / count) * 2, 1.0, curve: Curves.fastOutSlowIn))),
         animationController: widget.animationController,
         chart: barChart,
-        title: 'Weekly Sugar Consumption',
+        title: barChartTitle,
       ),
     );
   }
 
   Future<bool> getData() async {
     await Future<dynamic>.delayed(const Duration(milliseconds: 50));
+    currentNutrient = "Sugar";
     return true;
   }
 
   @override
   Widget build(BuildContext context) {
+    print("Build");
+    print("$currentNutrient");
     return Container(
       color: NutriscientAppTheme.background,
       child: Scaffold(
