@@ -14,6 +14,7 @@ https://flutter.dev/docs/get-started/install
 - See README under `../server`
 
 #### Android Push Notification Set Up
+Also see the changes under commit [9fec004](https://github.com/Dx724/Nutriscient/commit/9fec004) (ignore changes on lib/fcm)
 - Follow the SDK instruction, download `google-services.json` file and put under `android/app`
 - Follow the documentation to update Android permissions and notification setup https://firebase.flutter.dev/docs/messaging/overview/
 
