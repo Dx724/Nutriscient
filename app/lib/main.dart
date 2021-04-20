@@ -1,8 +1,12 @@
 import 'dart:io';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nutriscient/fcm/main.dart';
+import 'package:nutriscient/fcm/message.dart';
 import 'package:nutriscient/ui/nutriscient_app_theme.dart';
+import 'package:nutriscient/ui/register/register_screen.dart';
 
 import 'package:nutriscient/util/constants.dart';
 import 'package:nutriscient/ui/home_screen.dart';
@@ -10,6 +14,7 @@ import 'package:nutriscient/ui/home_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await loadConstants();
+  await Firebase.initializeApp();
   await SystemChrome.setPreferredOrientations(<DeviceOrientation>[DeviceOrientation.portraitUp, DeviceOrientation.portraitDown])
       .then((_) => runApp(MyApp()));
 }
@@ -28,7 +33,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: nutriscientAppThemeData,
       debugShowCheckedModeBanner: false,
-      home: NutriscientHomeScreen(),
+      // home: NutriscientHomeScreen(),
+      routes: {
+        '/': (context) => Application(),
+        '/message': (context) => MessageView(),
+        // '/message_register': (context) => RegisterScreen(),
+      }
     );
   }
 }

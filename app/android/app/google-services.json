@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "131434624094",
+    "firebase_url": "https://nutriscient-47b3a-default-rtdb.firebaseio.com",
+    "project_id": "nutriscient-47b3a",
+    "storage_bucket": "nutriscient-47b3a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:131434624094:android:d802e97cdba6bf5da930cf",
+        "android_client_info": {
+          "package_name": "com.eecs4764.nutriscient.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "131434624094-r83jtemsaqmj79fiq5uuh08aei30rue5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWvvzZu_TR_xyjvuNmDfnJZgx4D5FDJfg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "131434624094-r83jtemsaqmj79fiq5uuh08aei30rue5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
