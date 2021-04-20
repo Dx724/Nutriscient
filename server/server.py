@@ -46,8 +46,10 @@ def return_unregistered_rfid():
     header = request.headers
     if 'Client-Id' in header.keys():
         esp_id = header['Client-Id']
-        json = rfid_db.find_unregistered(esp_id)
-        return make_response(json, 200)
+        json_data = json.dumps(rfid_db.find_unregistered(esp_id))
+        print(type(json_data))
+        print(json_data)
+        return make_response(json_data, 200)
     else: 
         msg = traceback.format_exc()
         print(f'Server error: {msg}')
@@ -111,4 +113,4 @@ def get_all_ingredient_weight():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080)
+    app.run(host='0.0.0.0', port=8000)
