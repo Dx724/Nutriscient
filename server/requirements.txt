@@ -1,2 +1,4 @@
 flask==1.1.2
 requests==2.24.0
+# https://firebase.google.com/docs/admin/setup#python
+firebase-admin==0.4.8
