@@ -301,7 +301,7 @@ def get_all_ingredient_weight():
                 rfid_latest_refill_time = rfid_latest_refill_db_entry['time']
                 # print(rfid_latest_refill_time)
 
-                rfid_track_entry = {'rfid' : rfid,
+                rfid_track_entry = {'name' : rfid_entry['ingredient_name'],
                         'recent_weight' : rfid_current_weight,
                         'last_refill' : rfid_latest_refill, 
                         'latest_refill_time' : rfid_latest_refill_time}
