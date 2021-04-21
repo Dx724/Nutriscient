@@ -1,7 +1,10 @@
 import json
 import traceback
 import time
-import datetime
+import pytz
+from datetime import datetime
+import numpy as np
+import pandas as pd
 from flask import Flask, make_response, request
 
 from util import get_ingredient_nutrition, RFID_Database, Nutritions_Database, Weight_Database
@@ -119,7 +122,7 @@ def get_visualization_data_all():
         weight_all_list = list(weight_all_cursor)
 
         unique_rfids = weight_all_cursor.distinct('rfid')
-        res = []
+        data = []
         """ contains all the weights from the past week, grouped by rfid """
         for rfid in unique_rfids:
             weight_rfid_cursor = weight_all_cursor.collection.find({'rfid': rfid})
@@ -133,12 +136,24 @@ def get_visualization_data_all():
                 res_rfid.append(weight_rfid)
             weight_rfid_grouped = {'rfid': rfid,
                                    'weights': res_rfid}
-            res.append(weight_rfid_grouped)
-        import pickle
-        pickle.dump(res, open("data.pkl", "wb"))
+            data.append(weight_rfid_grouped)
+        '''
+        Step 2: Clean those entries -- take diff on weight, and detect and 
+        drop the refills entry
+        '''
+        data_cleaned = dict()
+        for entry in data:
+            weight_list = np.array([float(i['weight']) for i in entry['weights']])
+            time_list = np.array([float(i['time']) for i in entry['weights']])
+            actual_weight = -np.diff(weight_list)
+            non_refill_idx = np.where(actual_weight > 0)[0]
+            
+            cleaned_weights = actual_weight[non_refill_idx]
+            cleaned_times = time_list[non_refill_idx+1]      # +1 because diff
+            if len(cleaned_weights) != 0:
+                data_cleaned[entry['rfid']] = list(zip(cleaned_weights, cleaned_times))
 
         '''
-        Step 2: Clean those entries -- take diff on weight, and detect and drop the refills entry
         Step 3: Get a set of RFIDs, look up Nutritions_Database (if RFID not registered, drop),
                 get their name, and net nutrition for RFID records from last step
                 reshape into: (note the 'time' entry)
@@ -155,53 +170,75 @@ def get_visualization_data_all():
             rfid = nutritions['rfid']
             nutritions_entry = (nutritions['name'], nutritions['nutrition'])
             res[rfid] = nutritions_entry
-        import pickle
-        pickle.dump(res, open("data_nut.pkl", "wb"))
+
+
+        nutritions = res
+        data_with_nutritions = dict()
+        all_nutritions = set()
+
+        for rfid, weight_pairs in data_cleaned.items():
+            if rfid not in nutritions.keys():
+                continue
+            name, nutritions_dict = nutritions[rfid]
+            data_with_nutritions[name] = list()
+
+            for weight, t in weight_pairs:
+                nutrition_weighted = {k: v*weight for k, v in nutritions_dict.items()}
+                nutrition_weighted.update({'time': t})
+                
+                for nutrition in nutritions_dict.keys():
+                    all_nutritions.add(nutrition)
+                data_with_nutritions[name].append(nutrition_weighted)
 
         '''
         Step 4: Find all nutrients, reshape and put into pd dataframe
                 df_calories_kcal: [{'time': xxx, 'name': xxx, 'amount' xxx}, ...]
                 df_sugar: [{'time': xxx, 'name': xxx, 'amount' xxx}, ...]
-        Step 5: For each df_<nutrition_name>, for 1) whole week / whole dataframe,  2) grouped into each day
-                    calculate sum(amount) and groupby(name).sum
-        Step 6: Form result
-                calories --- Weekly ----
-                          |            | --- beef -- as below 
-                          |            | --- butter
-                          |            | --- ... 
-                          |
-                          |
-                          |-- Monday --| --- beef -- as below 
-                          |            | --- butter
-                          |            | --- ... 
-                          | 
-                          |-- Tuesday --
-                          | 
-                          | 
-                          |- ...
-
-                Repeat for other nutritions
-
-                {
-                    'total': 10000,
-                    'beef': 4000,
-                    'butter': 1500,
-                    'milk': 400,
-                    'salt': 100,
-                    'oil': 3000,
-                    'chicken': 1000,
-                    'dv': dv['<nutrition name>']
-                }
-
-                result = 
-                {
-                    'ok': True,
-                    'date_order': ['Tuesday', 'Wednesday', ..., 'Monday'],
-                    'data': <as above>
-                }
         '''
-        return make_response(json.dumps({'ok': False, 'message': 'Not Implemented'}), 500)
-        # return make_response(json_data, 200)
+        all_df = dict()
+
+        for nutrition_name in all_nutritions:
+            df_data = {'time': [], 'name': [], 'amount': []}
+            for name, entries in data_with_nutritions.items():
+                for entry in entries:
+                    if nutrition_name in entry.keys():
+                        df_data['time'].append(entry['time'])
+                        df_data['name'].append(name)
+                        df_data['amount'].append(entry[nutrition_name])
+            
+            all_df[nutrition_name] = pd.DataFrame(df_data)
+        '''
+        Step 5: For each df_<nutrition_name>
+        For
+            1) whole week / whole dataframe
+            2) grouped into each day
+        Do
+            calculate sum(amount) and groupby(name).sum
+        '''
+        weekdays = np.array(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])
+        response = dict()
+        for nutrition_name in all_nutritions:
+            df = all_df[nutrition_name]
+            df['weekday'] = df['time'].apply(epoch_to_weekday)
+
+            def get_result(sub_df):
+                result = {'all': sub_df['amount'].sum()}
+                result.update(
+                    sub_df.groupby('name').sum()['amount'].to_dict())
+                return result
+
+            response[nutrition_name] = {'weekly': get_result(df)}
+
+            start_of_week = epoch_to_weekday(df['time'].min())
+            weekday_offset = np.where(weekdays == start_of_week)[0][0]
+            visualize_weekdays = list(np.roll(weekdays, -weekday_offset))
+
+            for day in visualize_weekdays:
+                response[nutrition_name][day] = get_result(df[df['weekday'] == day])
+
+            response[nutrition_name]['plot_weekdays'] = visualize_weekdays
+
+        return make_response(json.dumps({'ok': True, 'message': json.dumps(response)}), 200)
     else:
         return make_response('Invalid request', 400)
 
@@ -235,6 +272,13 @@ def get_all_ingredient_weight():
     else:
         return make_response('Invalid request', 400)
 
+
+def epoch_to_weekday(epoch, timezone='America/New_York'):
+    utc_dt = datetime.utcfromtimestamp(epoch).replace(tzinfo=pytz.utc)
+    tz = pytz.timezone(timezone)
+    dt = utc_dt.astimezone(tz)
+    # return dt.strftime('%Y-%m-%d %H:%M:%S %Z%z')
+    return dt.strftime('%A')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)
