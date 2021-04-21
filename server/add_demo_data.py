@@ -48,3 +48,4 @@ if __name__ == '__main__':
                   'Ingredient-Id': int(rfid),
                   'Do-Track': do_track
                   }
+        label_new_rfid(packet)
