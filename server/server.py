@@ -27,7 +27,7 @@ def enter_debug_mode():
 @app.route('/add_weight', methods=['POST'])
 def add_data():
     try:
-        params = json.loads(request.json)
+        params = request.values
         if all([i in params.keys() for i in ['Client-Id', 'RFID-Id', 'Weight']]):
             esp_id, rfid, weight = params['Client-Id'], params['RFID-Id'], params['Weight']
             weight_db.insert(esp_id, rfid, weight)
