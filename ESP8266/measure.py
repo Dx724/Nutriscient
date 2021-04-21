@@ -36,7 +36,7 @@ def oled_text(t1, t2=None, t3=None):
     if t3 is not None:
         if len(t3) > 16:
             print("Length Warning: ", t3)
-        oled.text("{}".format(t2), 0, 20)
+        oled.text("{}".format(t3), 0, 20)
     oled.show()
 
 def uid_to_str(uid):

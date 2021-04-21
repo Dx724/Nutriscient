@@ -30,5 +30,7 @@ Website Notes:
 - App images (prototype section?)
 - App visualizations (results section?)
 - Low cost of device!
+- Reusability of RFID tags?
 - Additional features (special card, diet/condition-related notifications)
 - Cite nutrition DVs, other scientific references?
+- Add batteries?
