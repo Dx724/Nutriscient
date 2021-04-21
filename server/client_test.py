@@ -67,21 +67,17 @@ def add_new_weight(weight_data):
         print(f'>> [ERR] Code={response.status_code}, Message={response.content.decode()}')
 
 if __name__ == '__main__':
-    
+    """
     print('testing RFID registration...')
     label_new_rfid(rfid_sugar_incomplete)
     label_new_rfid(rfid_pineapple_incomplete)
     get_unregistered_rfid()
     label_new_rfid(rfid_pineapple)
     label_new_rfid(rfid_sugar)
-    
     """
-    label_new_rfid(rfid_pineapple)
-    label_new_rfid(rfid_sugar)
-    
+
     print('\ntesting weight insertion...')
     add_new_weight(weight_sugar_filled)
     add_new_weight(weight_sugar_used_1g)
     add_new_weight(weight_pineapple_filled)
     add_new_weight(weight_pineapple_used_100g)
-    """

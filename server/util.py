@@ -23,7 +23,11 @@ class RFID_Database:
             """ Completing registration for {rfid} """
             collection.replace_one({'rfid' : rfid, 'ingredient_name' : ''}, post)
         elif collection.count_documents({'rfid' : rfid}) == 0:
+            """ new RFID """
             collection.insert_one(post)
+        elif collection.count_documents({'rfid' : rfid, 'ingredient_name' : {'$ne': ingredient_name}}):
+            """ reused RFID """
+            collection.replace_one({'rfid' : rfid, 'ingredient_name' : ingredient_name}, post)
 
     def insert_incomplete(self, esp_id, rfid):
         col_name = 'ESP' + esp_id
@@ -38,7 +42,7 @@ class RFID_Database:
         col_name = 'ESP' + esp_id
         collection = self.db[col_name]
         if collection.count_documents({}) == 0:
-            collection_not_found = f'ESP {esp_id} do not exist'
+            collection_not_found = 'invalid ESP'
             return collection_not_found
         """ return most recent RFID that isn't registered with an ingredient """
         post_cursor = collection.find({'ingredient_name' : ''}).sort('_id', -1).limit(1)
@@ -56,13 +60,18 @@ class Nutritions_Database:
         client = MongoClient('localhost', 27017)
         self.db = client['Nutriscient_nutritions']
 
-    def insert(self, esp_id, rfid, nutrition):
+    def insert(self, esp_id, rfid, name, nutrition):
         col_name = 'ESP' + esp_id
         collection = self.db[col_name]
+        post = {'rfid' : rfid,
+                'name' : name,
+                'nutrition' : nutrition}
         if collection.find({'rfid' : rfid}).count() == 0:
-            post = {'rfid' : rfid,
-                    'nutrition' : nutrition}
+            """ new ingredient """
             collection.insert_one(post)
+        elif collection.count_documents({'rfid' : rfid, 'name' : {'$ne': name}}):
+            """ reused RFID """
+            collection.replace_one({'rfid' : rfid, 'name' : name}, post)
 
 
 class Weight_Database:

@@ -66,7 +66,7 @@ def label_rfid():
         if nutrition is not None:
             ingredient_name, ingredient_nutrition = nutrition
             rfid_db.insert(esp_id, rfid, ingredient_name)
-            nutritions_db.insert(esp_id, rfid, ingredient_nutrition)
+            nutritions_db.insert(esp_id, rfid, ingredient_name, ingredient_nutrition)
             return make_response('OK')
         else:
             return make_response(f'Error finding nutrition info for id={ingredient_id}', 500)
@@ -81,33 +81,43 @@ def label_rfid():
 
 @app.route('/visualize', methods=['GET'])
 def get_visualization_data_all():
-    params = request.values
+    params = json.loads(request.json)
     if 'Client-Id' in params.keys():
         esp_id = params['Client-Id']
         # TODO: Query database, format output data, return
-        raise NotImplementedError
+        fake_data = [{'Fiber_g' : {{'rfid' : 1, 'nutrient' : 1}, {'rfid' : 2, 'nutrient' : 10}}}, 
+                {'Sugar_g': {{'rfid' : 1, 'nutrient' : 10}, {'rfid' : 2, 'nutrient' : 20}}}]
+        json_data = json.dumps(fake_data)
+        return make_response(json_data, 200)
     else:
         return make_response('Invalid request', 400)
 
 
 @app.route('/visualize_ingredient', methods=['GET'])
 def get_visualization_data_one_ingredient():
-    params = request.values
+    params = json.loads(request.json)
     if all([i in params.keys() for i in ['Client-Id', 'RFID-Id']]):
         esp_id, rfid = params['Client-Id'], params['RFID-Id']
         # TODO: Query database, format output data, return
-        raise NotImplementedError
+        fake_data = [{'rfid' : 1, 'used' : 0.01, 'time' : 1618948800}, 
+                {'rfid' : 1, 'used' : 0.01, 'time' : 1618902000}, 
+                {'rfid' : 1, 'used' : 0.02, 'time' : 1618862400}] 
+        json_data = json.dumps(fake_data)
+        return make_response(json_data, 200)
     else:
         return make_response('Invalid request', 400)
 
 
 @app.route('/get_all_ingredient', methods=['GET'])
 def get_all_ingredient_weight():
-    params = request.values
+    params = json.loads(request.json)
     if 'Client-Id' in params.keys():
         esp_id = params['Client-Id']
         # TODO: Query database, format output data, return
-        raise NotImplementedError
+        fake_data = [{'rfid' : 1, 'recent_weight' : 90, 'last_refill' : 100},
+                {'rfid' : 2, 'recent_weight' : 800, 'last_refill' : 1000}]
+        json_data = json.dumps(fake_data)
+        return make_response(json_data, 200)
     else:
         return make_response('Invalid request', 400)
 
