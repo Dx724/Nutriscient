@@ -96,7 +96,32 @@ def get_visualization_data_all():
         esp_id = params['Client-Id']
         # TODO: Handle timezone
         '''
-        Step 1: Find all entries in Weight_Database in the range [time.time() - one week   ...   time.time()]
+        Step 1: Find all entries in Weight_Database in the range [time.time() - one week   ...   time.time()] '''
+        current_time_epoch = time.time()
+        current_time_readable = datetime.datetime.fromtimestamp(current_time_epoch)
+        from_time_readable = current_time_readable - datetime.timedelta(days=7)
+        from_time_epoch = from_time_readable.timestamp()
+
+        weight_col = weight_db.db['ESP' + esp_id]
+        weight_all_cursor = weight_col.find({'time': {'$lte': current_time_epoch, '$gte': from_time_epoch}})
+        weight_all_list = list(weight_all_cursor)
+
+        unique_rfids = weight_all_cursor.distinct('rfid')
+        res = [] """ contains all the weights from the past week, grouped by rfid """
+        for rfid in unique_rfids:
+            weight_rfid_cursor = weight_all_cursor.collection.find({'rfid' : rfid})
+            weight_rfid_list = list(weight_rfid_cursor)
+            res_rfid = []
+            for weight_rfid_entry in weight_rfid_list:
+                weight_rfid = {'weight' : weight_rfid_entry['weight'],
+                        'time' : weight_rfid_entry['time']}
+                res_rfid.append(weight_rfid)
+            weight_rfid_grouped = {'rfid' : rfid,
+                    'weights' : res_rfid}
+            res.append(weight_rfid_grouped)
+        # print(res)
+
+        '''
         Step 2: Clean those entries -- take diff on weight, and detect and drop the refills entry
         Step 3: Get a set of RFIDs, look up Nutritions_Database (if RFID not registered, drop),
                 get their name, and net nutrition for RFID records from last step
@@ -151,7 +176,7 @@ def get_visualization_data_all():
     else:
         return make_response('Invalid request', 400)
 
-
+"""
 @app.route('/visualize_ingredient', methods=['GET'])
 def get_visualization_data_one_ingredient():
     params = request.values
@@ -165,7 +190,7 @@ def get_visualization_data_one_ingredient():
         return make_response(json_data, 200)
     else:
         return make_response('Invalid request', 400)
-
+"""
 
 @app.route('/get_all_ingredient', methods=['GET'])
 def get_all_ingredient_weight():
