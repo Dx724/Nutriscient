@@ -30,6 +30,7 @@ class RFID_Database:
             collection.replace_one({'rfid' : rfid, 'ingredient_name' : ingredient_name}, post)
 
     def insert_incomplete(self, esp_id, rfid):
+        """ Insert this RFID as unregistered """
         col_name = 'ESP' + esp_id
         collection = self.db[col_name]
         post = {'rfid' : rfid,
@@ -51,6 +52,17 @@ class RFID_Database:
         del post['_id']
         del post['ingredient_name']
         return post
+
+    def is_new_rfid(self, esp_id, rfid):
+        col_name = 'ESP' + esp_id
+        collection = self.db[col_name]
+
+        if collection.count_documents({'rfid': rfid}) == 0:
+            # New RFID
+            self.insert_incomplete(esp_id, rfid)
+            return True
+        else:
+            return False
 
 
 class Nutritions_Database:

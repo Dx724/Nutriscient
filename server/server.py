@@ -31,6 +31,9 @@ def add_data():
         if all([i in params.keys() for i in ['Client-Id', 'RFID-Id', 'Weight']]):
             esp_id, rfid, weight = params['Client-Id'], params['RFID-Id'], params['Weight']
             weight_db.insert(esp_id, rfid, weight)
+            if rfid_db.is_new_rfid(esp_id, rfid):
+                pass
+                # TODO: Fire push notification
             return make_response('OK')
         else:
             return make_response('Invalid request', 400)
@@ -78,11 +81,6 @@ def label_rfid():
                 'msg': f'Error finding nutrition info for id={ingredient_id}'
             }
             return make_response(json.dumps(response), 500)
-    elif all([i in params.keys() for i in ['Client-Id', 'RFID-Id']]):
-        """ Registration was incomplete """
-        esp_id, rfid = params['Client-Id'], params['RFID-Id']
-        rfid_db.insert_incomplete(esp_id, rfid)
-        return make_response(json.dumps({'ok': True}))
     else:
         response = {
             'ok': False,
