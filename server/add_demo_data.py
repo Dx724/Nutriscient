@@ -2,7 +2,7 @@ import pandas as pd
 import random
 from tqdm import tqdm
 
-from client_test import add_new_weight
+from client_test import add_new_weight, label_new_rfid
 
 demo_esp_id = '2f6f1400'
 # demo_rfid = '67fec893c2'
@@ -41,3 +41,10 @@ if __name__ == '__main__':
                   'RFID-Id': rfid,
                   'Weight': weight}
         add_new_weight(packet)
+
+    for rfid, do_track in tqdm(do_track.items()):
+        packet = {'Client-Id': demo_esp_id,
+                  'RFID-Id': rfid,
+                  'Ingredient-Id': int(rfid),
+                  'Do-Track': do_track
+                  }
