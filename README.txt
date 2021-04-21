@@ -20,3 +20,15 @@ Connect HX711
 Power/GND
 SCK to 15
 DT to 16
+
+Website Notes:
+- Put video link
+- Architecture diagram, talk about it
+- Talk about server stuff (architecture section?)
+- Describe prototype
+- App GIFs
+- App images (prototype section?)
+- App visualizations (results section?)
+- Low cost of device!
+- Additional features (special card, diet/condition-related notifications)
+- Cite nutrition DVs, other scientific references?
