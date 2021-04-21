@@ -7,6 +7,7 @@ import 'package:nutriscient/ui/nutriscient_app_theme.dart';
 import 'package:nutriscient/ui/my_diary/meals_list_view.dart';
 import 'package:nutriscient/ui/my_diary/water_view.dart';
 import 'package:flutter/material.dart';
+import 'package:nutriscient/util/data.dart';
 
 class FeedScreen extends StatefulWidget {
   const FeedScreen({Key key, this.animationController}) : super(key: key);
@@ -24,16 +25,21 @@ class _FeedScreenState extends State<FeedScreen>
   final ScrollController scrollController = ScrollController();
   double topBarOpacity = 0.0;
 
-  Map dailyIntakeData = {
-    'calories': 1000.0,
-    'sugar': 50.0,
-    'carbs': 700.13,
-    'protein': 58.5,
-    'fat': 100.7,
-  };
+  Map dailyIntakeData;
 
   @override
   void initState() {
+    List<String> plotWeekdays = List<String>.from(visualizationData[nutritions[0]]['plot_weekdays']);
+    String today = plotWeekdays.last;
+
+    dailyIntakeData = {
+      'calories': visualizationData['Calories'][today]['all'],
+      'sugar': visualizationData['Sugar'][today]['all'],
+      'carbs': visualizationData['Net Carbohydrates'][today]['all'],
+      'protein': visualizationData['Protein'][today]['all'],
+      'fat': visualizationData['Fat'][today]['all'],
+    };
+
     topBarAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(
             parent: widget.animationController,
@@ -71,14 +77,17 @@ class _FeedScreenState extends State<FeedScreen>
     listViews.add(
       TitleView(
         titleTxt: 'Daily Intake',
-        subTxt: 'Details',
+        subTxt: 'Refresh',
+        icon: Icons.refresh,
         animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
             parent: widget.animationController,
             curve:
                 Interval((1 / count) * 0, 1.0, curve: Curves.fastOutSlowIn))),
         animationController: widget.animationController,
         callback: () {
-          print("Daily intake details");
+          getVisualizationData().then((value) {
+            // TODO: rebuild
+          });
         },
       ),
     );

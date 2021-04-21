@@ -100,7 +100,10 @@ Widget buildTitle(String titleText) {
   );
 }
 
-Widget buildButton(String buttonText, Function callback) {
+Widget buildButton(
+    {String buttonText,
+    Function callback,
+    IconData icon: Icons.arrow_forward}) {
   return InkWell(
     highlightColor: Colors.transparent,
     borderRadius: BorderRadius.all(Radius.circular(4.0)),
@@ -126,7 +129,7 @@ Widget buildButton(String buttonText, Function callback) {
             height: 38,
             width: 26,
             child: Icon(
-              Icons.arrow_forward,
+              icon,
               color: NutriscientAppTheme.darkText,
               size: 18,
             ),
