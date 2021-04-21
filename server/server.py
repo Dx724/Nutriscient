@@ -110,6 +110,7 @@ def get_visualization_data_all():
         res = [] """ contains all the weights from the past week, grouped by rfid """
         for rfid in unique_rfids:
             weight_rfid_cursor = weight_all_cursor.collection.find({'rfid' : rfid})
+            weight_rfid_cursor = weight_rfid_cursor.sort('_id', 1) """ earliest first """
             weight_rfid_list = list(weight_rfid_cursor)
             res_rfid = []
             for weight_rfid_entry in weight_rfid_list:
@@ -130,6 +131,17 @@ def get_visualization_data_all():
                 'name1': [{'time': xxx, 'calories_kcal': 300, 'Sugar_g': 10}, {'time': xxx, 'calories_kcal': 150, 'Sugar_g': 5}],
                 'name2': [{'time': xxx, 'Chromium_µg': 5.1, 'Sugar_g': 10}, {'time': xxx, 'Chromium_µg': 2.45, 'Sugar_g': 5}]
                 }
+        '''
+        nutritions_col = nutritions_db.db['ESP' + esp_id]
+        nutritions_list = list(nutritions_col.find())
+        res = {} """ name and nutritions of all RFIDs """
+        for nutritions in nutritions_list:
+            rfid = nutritions['rfid']
+            nutritions_entry = (nutritions['name'], nutritions['nutrition'])
+            res[rfid] = nutritions_entry
+        # print(res)
+
+        '''
         Step 4: Find all nutrients, reshape and put into pd dataframe
                 df_calories_kcal: [{'time': xxx, 'name': xxx, 'amount' xxx}, ...]
                 df_sugar: [{'time': xxx, 'name': xxx, 'amount' xxx}, ...]
