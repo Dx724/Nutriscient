@@ -43,13 +43,16 @@ def add_data():
 @app.route('/return_unregistered_rfid', methods=['GET'])
 def return_unregistered_rfid():
     """ Push notification for user to complete registering RFID """
-    header = request.headers
-    if 'Client-Id' in header.keys():
-        esp_id = header['Client-Id']
-        json_data = json.dumps(rfid_db.find_unregistered(esp_id))
-        print(type(json_data))
-        print(json_data)
-        return make_response(json_data, 200)
+    params = request.values
+    if 'Client-Id' in params.keys():
+        esp_id = params['Client-Id']
+        response = rfid_db.find_unregistered(esp_id)
+        if response is None:
+            response = {"exist": False}
+        else:
+            response["exist"] = True
+        response = json.dumps(response)
+        return make_response(response, 200)
     else: 
         msg = traceback.format_exc()
         print(f'Server error: {msg}')

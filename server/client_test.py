@@ -51,12 +51,13 @@ def label_new_rfid(rfid_data):
         print(f'>> [ERR] Code={response.status_code}, Message={response.content.decode()}')
 
 
-def get_unregistered_rfid():
+def get_unregistered_rfid(esp_id):
     time_start = time.time()
-    params = {'Client-Id': client_id}
+    params = {'Client-Id': esp_id}
     response = requests.get(url_get_unregistered, params=params)
     if response.status_code == 200:
         print('>> [OK] Finished in ' + str(time.time() - time_start) + ' sec')
+        print('\t\t--> ' + repr(response.json()))
     else:
         print(f'>> [ERR] Code={response.status_code}, Message={response.content.decode()}')
 
@@ -85,3 +86,6 @@ if __name__ == '__main__':
     add_new_weight(weight_sugar_used_1g)
     add_new_weight(weight_pineapple_filled)
     add_new_weight(weight_pineapple_used_100g)
+
+    print('\n---------------------\n[APP] Get unregistered RFIDs')
+    get_unregistered_rfid(client_id)

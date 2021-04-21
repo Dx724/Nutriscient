@@ -42,13 +42,11 @@ class RFID_Database:
         col_name = 'ESP' + esp_id
         collection = self.db[col_name]
         if collection.count_documents({}) == 0:
-            collection_not_found = 'invalid ESP'
-            return collection_not_found
+            return None
         """ return most recent RFID that isn't registered with an ingredient """
         post_cursor = collection.find({'ingredient_name' : ''}).sort('_id', -1).limit(1)
         if post_cursor.count() == 0:
-            all_registered = 'all registered'
-            return all_registered
+            return None
         post = post_cursor[0]
         del post['_id']
         del post['ingredient_name']
