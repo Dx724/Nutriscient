@@ -42,7 +42,6 @@ class _VisualizeScreenState extends State<VisualizeScreen>
     // TODO: Replace with API Calls
     allNutrients = nutritions;
     currentNutrient = nutritions[0];
-    barChartData = createSampleBarChartData();
     addAllListData();
 
     scrollController.addListener(() {
@@ -116,6 +115,8 @@ class _VisualizeScreenState extends State<VisualizeScreen>
                 labelPosition: charts.ArcLabelPosition.auto)
           ]),
     );
+
+    barChartData = createBarChartData(currentNutrient);
 
     barChart = new charts.OrdinalComboChart(
       barChartData,
