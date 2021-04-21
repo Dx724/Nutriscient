@@ -39,13 +39,14 @@ if __name__ == '__main__':
         rfid, weight = v
         packet = {'Client-Id': demo_esp_id,
                   'RFID-Id': rfid,
-                  'Weight': weight}
+                  'Weight': weight,
+                  'Time-Stamp': time}
         add_new_weight(packet)
 
-    for rfid, do_track in tqdm(do_track.items()):
-        packet = {'Client-Id': demo_esp_id,
-                  'RFID-Id': rfid,
-                  'Ingredient-Id': int(rfid),
-                  'Do-Track': do_track
-                  }
-        label_new_rfid(packet)
+    # for rfid, do_track in tqdm(do_track.items()):
+    #     packet = {'Client-Id': demo_esp_id,
+    #               'RFID-Id': rfid,
+    #               'Ingredient-Id': int(rfid),
+    #               'Do-Track': do_track
+    #               }
+    #     label_new_rfid(packet)

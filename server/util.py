@@ -90,12 +90,14 @@ class Weight_Database:
         client = MongoClient('localhost', 27017)
         self.db = client['Nutriscient_weight']
 
-    def insert(self, esp_id, rfid, weight):
+    def insert(self, esp_id, rfid, weight, epoch):
         col_name = 'ESP' + esp_id
         collection = self.db[col_name]
+        if epoch is None:
+            epoch = time.time()
         post = {'rfid' : rfid,
                 'weight' : weight,
-                'time' : time.time()}
+                'time' : epoch}
         collection.insert_one(post)
 
 

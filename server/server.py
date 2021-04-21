@@ -5,6 +5,7 @@ import datetime
 from flask import Flask, make_response, request
 
 from util import get_ingredient_nutrition, RFID_Database, Nutritions_Database, Weight_Database
+import firebase
 
 app = Flask(__name__)
 rfid_db = RFID_Database()
@@ -33,10 +34,18 @@ def add_data():
         params = request.values
         if all([i in params.keys() for i in ['Client-Id', 'RFID-Id', 'Weight']]):
             esp_id, rfid, weight = params['Client-Id'], params['RFID-Id'], params['Weight']
-            weight_db.insert(esp_id, rfid, weight)
+            if 'Time-Stamp' in params.keys():
+                epoch = float(params['Time-Stamp'])
+            else:
+                epoch = None
+            weight_db.insert(esp_id, rfid, float(weight), epoch)
             if rfid_db.is_new_rfid(esp_id, rfid):
-                pass
-                # TODO: Fire push notification
+                firebasae.push_notification(
+                    title='Register New Item', 
+                    body=f'Tell us what is {weight:.2f}kg!',
+                    field_a=weight,
+                    topic=esp_id
+                    )
             return make_response('OK')
         else:
             return make_response('Invalid request', 400)
@@ -98,11 +107,12 @@ def get_visualization_data_all():
         esp_id = params['Client-Id']
         # TODO: Handle timezone
         '''
-        Step 1: Find all entries in Weight_Database in the range [time.time() - one week   ...   time.time()] '''
+        Step 1: Find all entries in Weight_Database in the range
+        [time.time() - one week   ...   time.time()]
+        Sorted by timestamp
+        '''
         current_time_epoch = time.time()
-        current_time_readable = datetime.datetime.fromtimestamp(current_time_epoch)
-        from_time_readable = current_time_readable - datetime.timedelta(days=7)
-        from_time_epoch = from_time_readable.timestamp()
+        from_time_epoch = time.time() - (86400 * 7)
 
         weight_col = weight_db.db['ESP' + esp_id]
         weight_all_cursor = weight_col.find({'time': {'$lte': current_time_epoch, '$gte': from_time_epoch}})
@@ -124,7 +134,8 @@ def get_visualization_data_all():
             weight_rfid_grouped = {'rfid': rfid,
                                    'weights': res_rfid}
             res.append(weight_rfid_grouped)
-        # print(res)
+        import pickle
+        pickle.dump(res, open("data.pkl", "wb"))
 
         '''
         Step 2: Clean those entries -- take diff on weight, and detect and drop the refills entry
@@ -144,7 +155,8 @@ def get_visualization_data_all():
             rfid = nutritions['rfid']
             nutritions_entry = (nutritions['name'], nutritions['nutrition'])
             res[rfid] = nutritions_entry
-        # print(res)
+        import pickle
+        pickle.dump(res, open("data_nut.pkl", "wb"))
 
         '''
         Step 4: Find all nutrients, reshape and put into pd dataframe
