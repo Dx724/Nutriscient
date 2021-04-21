@@ -1,4 +1,4 @@
 flask==1.1.2
 requests==2.24.0
 # See https://firebase.google.com/docs/admin/setup#python for setting up / getting credentials
-firebase-admin==0.4.8
+firebase-admin==4.5.3  # sudo; update pip; need build-essentials. On AWS Centos: sudo yum groupinstall 'Development Tools' -y
