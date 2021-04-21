@@ -44,9 +44,10 @@ weight_pineapple_used_100g = {'Client-Id': client_id,
 
 def label_new_rfid(rfid_data):
     time_start = time.time()
-    response = requests.post(url_label_rfid, json=json.dumps(rfid_data))
-    if response.status_code == 200 and response.content == b'OK':
+    response = requests.post(url_label_rfid, params=rfid_data)
+    if response.status_code == 200:
         print('>> [OK] Finished in ' + str(time.time() - time_start) + ' sec')
+        print('\t\t--> ' + repr(response.json()))
     else:
         print(f'>> [ERR] Code={response.status_code}, Message={response.content.decode()}')
 
@@ -89,3 +90,9 @@ if __name__ == '__main__':
 
     print('\n---------------------\n[APP] Get unregistered RFIDs')
     get_unregistered_rfid(client_id)
+
+    print('\n---------------------\n[APP] Label RFID')
+    # label_new_rfid(rfid_sugar_incomplete)
+    # label_new_rfid(rfid_pineapple_incomplete)
+    label_new_rfid(rfid_pineapple)
+    label_new_rfid(rfid_sugar)

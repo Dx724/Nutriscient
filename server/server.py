@@ -62,24 +62,33 @@ def return_unregistered_rfid():
 @app.route('/label_rfid', methods=['POST'])
 def label_rfid():
     """ Add record in database to correspond RFID with actual food item """
-    params = json.loads(request.json)
+    params = request.values
     if all([i in params.keys() for i in ['Client-Id', 'RFID-Id', 'Ingredient-Id']]):
         esp_id, rfid, ingredient_id = params['Client-Id'], params['RFID-Id'], params['Ingredient-Id']
+        print(esp_id, rfid, ingredient_id)
         nutrition = get_ingredient_nutrition(ingredient_id)
         if nutrition is not None:
             ingredient_name, ingredient_nutrition = nutrition
             rfid_db.insert(esp_id, rfid, ingredient_name)
             nutritions_db.insert(esp_id, rfid, ingredient_name, ingredient_nutrition)
-            return make_response('OK')
+            return make_response(json.dumps({'ok': True}))
         else:
-            return make_response(f'Error finding nutrition info for id={ingredient_id}', 500)
+            response = {
+                'ok': False,
+                'msg': f'Error finding nutrition info for id={ingredient_id}'
+            }
+            return make_response(json.dumps(response), 500)
     elif all([i in params.keys() for i in ['Client-Id', 'RFID-Id']]):
         """ Registration was incomplete """
         esp_id, rfid = params['Client-Id'], params['RFID-Id']
         rfid_db.insert_incomplete(esp_id, rfid)
-        return make_response('OK')
+        return make_response(json.dumps({'ok': True}))
     else:
-        return make_response('Invalid request', 400)
+        response = {
+            'ok': False,
+            'msg': f'Expected parameters: Client-Id, RFID-Id, Ingredient-Id'
+        }
+        return make_response(json.dumps(response), 400)
 
 
 @app.route('/visualize', methods=['GET'])
