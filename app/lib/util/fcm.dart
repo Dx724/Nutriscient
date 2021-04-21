@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:nutriscient/fcm/message.dart';
+import 'package:nutriscient/util/constants.dart';
 
 /// Define a top-level named handler which background/terminated messages will
 /// call.
@@ -102,15 +103,15 @@ void setupFcmCallbacks(BuildContext context) {
 // Callback for notification setting
 Future<void> updatePushNotiSubscription(bool doSubscribe) async {
   if (doSubscribe) {
-    print('FlutterFire Messaging Example: Subscribing to topic "fcm_test".');
-    await FirebaseMessaging.instance.subscribeToTopic('fcm_test');
+    print('FCM: Subscribing to topic "$kScaleId".');
+    await FirebaseMessaging.instance.subscribeToTopic(kScaleId);
     print(
-        'FlutterFire Messaging Example: Subscribing to topic "fcm_test" successful.');
+        'FCM: Subscribing to topic "$kScaleId" successful.');
   } else {
     print(
-        'FlutterFire Messaging Example: Unsubscribing from topic "fcm_test".');
-    await FirebaseMessaging.instance.unsubscribeFromTopic('fcm_test');
+        'FCM: Unsubscribing from topic "$kScaleId".');
+    await FirebaseMessaging.instance.unsubscribeFromTopic(kScaleId);
     print(
-        'FlutterFire Messaging Example: Unsubscribing from topic "fcm_test" successful.');
+        'FCM: Unsubscribing from topic "$kScaleId" successful.');
   }
 }

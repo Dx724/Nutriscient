@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:nutriscient/ui/common_widgets.dart';
 
 import 'package:nutriscient/ui/nutriscient_app_theme.dart';
 import 'package:nutriscient/ui/visualize/chart_card_view.dart';
 import 'package:nutriscient/ui/visualize/select_nutrient_view.dart';
 
 import 'package:nutriscient/ui/models/chart_2d_data.dart';
+import 'package:nutriscient/util/data.dart';
 
 class VisualizeScreen extends StatefulWidget {
   const VisualizeScreen({Key key, this.animationController}) : super(key: key);
@@ -27,6 +29,7 @@ class _VisualizeScreenState extends State<VisualizeScreen>
   Widget pieChart, barChart;
   List<charts.Series<PieChartModel, int>> pieChartData;
   List<charts.Series<BarChartModel, String>> barChartData;
+  List<String> allNutrients;
   String currentNutrient;
 
   @override
@@ -37,9 +40,8 @@ class _VisualizeScreenState extends State<VisualizeScreen>
             curve: Interval(0, 0.5, curve: Curves.fastOutSlowIn)));
 
     // TODO: Replace with API Calls
-    pieChartData = createSamplePieChartData();
-    barChartData = createSampleBarChartData();
-    currentNutrient = "Sugar";
+    allNutrients = nutritions;
+    currentNutrient = nutritions[0];
     addAllListData();
 
     scrollController.addListener(() {
@@ -84,7 +86,7 @@ class _VisualizeScreenState extends State<VisualizeScreen>
             curve:
                 Interval((1 / count) * 0, 1.0, curve: Curves.fastOutSlowIn))),
         animationController: widget.animationController,
-        values: ["Sugar", "Calories"],
+        values: allNutrients,
         value: currentNutrient,
         callback: selectedNutrient,
       ),
@@ -95,6 +97,8 @@ class _VisualizeScreenState extends State<VisualizeScreen>
 
   void rebuildCharts() {
     const int count = 3;
+    pieChartData = createPieChartData(currentNutrient);
+
     pieChart = charts.PieChart(
       pieChartData,
       animate: true,
@@ -111,6 +115,8 @@ class _VisualizeScreenState extends State<VisualizeScreen>
                 labelPosition: charts.ArcLabelPosition.auto)
           ]),
     );
+
+    barChartData = createBarChartData(currentNutrient);
 
     barChart = new charts.OrdinalComboChart(
       barChartData,
@@ -264,6 +270,15 @@ class _VisualizeScreenState extends State<VisualizeScreen>
                                   ),
                                 ),
                               ),
+                            ),
+                            buildButton(
+                              buttonText: 'Refresh',
+                              callback: () {
+                                getVisualizationData().then((value) {
+                                  // TODO
+                                });
+                              },
+                              icon: Icons.refresh,
                             ),
                           ],
                         ),

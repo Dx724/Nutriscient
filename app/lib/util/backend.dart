@@ -53,7 +53,10 @@ Future<Map> getVisualizeAll() async {
   final response = await _getVisualizeAll();
   if (response.statusCode == 200) {
     var parsed = jsonDecode(response.body);
-    return parsed;
+    if (parsed['ok'])
+      return jsonDecode(parsed['message']);
+    else
+      throw Exception('API Call Failed: $parsed');
   } else
     throw Exception('API Call Failed');
 }

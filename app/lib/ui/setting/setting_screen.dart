@@ -62,9 +62,11 @@ class _SettingScreenState extends State<SettingScreen>
         animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
             parent: widget.animationController,
             curve:
-            Interval((1 / count) * 0, 1.0, curve: Curves.fastOutSlowIn))),
+                Interval((1 / count) * 0, 1.0, curve: Curves.fastOutSlowIn))),
         animationController: widget.animationController,
-        callback: () {debugPrint("buttonCallback");},
+        callback: () {
+          debugPrint("buttonCallback");
+        },
         title: 'Title',
         defaultValue: 'defaultValue',
         hintText: 'hintText',
@@ -178,9 +180,11 @@ class _SettingScreenState extends State<SettingScreen>
                                 ),
                               ),
                             ),
-                            buildButton("Save", () async {
-                              await saveAllConstants();
-                            })
+                            buildButton(
+                                buttonText: "Save",
+                                callback: () async {
+                                  await saveAllConstants();
+                                })
                           ],
                         ),
                       )

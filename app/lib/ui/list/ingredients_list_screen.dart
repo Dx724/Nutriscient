@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:nutriscient/ui/common_widgets.dart';
 import 'package:nutriscient/ui/nutriscient_app_theme.dart';
 import 'package:nutriscient/ui/ui_view/title_view.dart';
 import 'package:nutriscient/ui/list/table_view.dart';
@@ -204,6 +205,15 @@ class _IngredientsListScreenState extends State<IngredientsListScreen>
                                 ),
                               ),
                             ),
+                            buildButton(
+                              buttonText: 'Refresh',
+                              callback: () {
+                                getIngredientData().then((value) {
+                                  // TODO
+                                });
+                              },
+                              icon: Icons.refresh,
+                            )
                           ],
                         ),
                       )
