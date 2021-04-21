@@ -252,7 +252,8 @@ def on_measure(m):
     rfid_tag = read_tag()
     kg_weight = round(hx.to_grams(m)/1000, 3)
     print("Tag: {}".format(read_tag()))
-    oled_text("Weight: {:.3f}kg".format(kg_weight), "ID: {}".format(uid))
+    oled_text("Weight: {:.3f}kg".format(kg_weight), "ID: {}".format(uid),
+              "Tag Detected" if rfid_tag is not None else "No Tag Found")
     oled.invert(1)
     if rfid_tag is not None: # Can send data after object is removed for speed
         send_to_server(uid, rfid_tag, kg_weight)
