@@ -91,21 +91,70 @@ def label_rfid():
 
 @app.route('/visualize', methods=['GET'])
 def get_visualization_data_all():
-    params = json.loads(request.json)
+    params = request.values
     if 'Client-Id' in params.keys():
         esp_id = params['Client-Id']
-        # TODO: Query database, format output data, return
-        fake_data = [{'Fiber_g' : {{'rfid' : 1, 'nutrient' : 1}, {'rfid' : 2, 'nutrient' : 10}}}, 
-                {'Sugar_g': {{'rfid' : 1, 'nutrient' : 10}, {'rfid' : 2, 'nutrient' : 20}}}]
-        json_data = json.dumps(fake_data)
-        return make_response(json_data, 200)
+        # TODO: Handle timezone
+        '''
+        Step 1: Find all entries in Weight_Database in the range [time.time() - one week   ...   time.time()]
+        Step 2: Clean those entries -- take diff on weight, and detect and drop the refills entry
+        Step 3: Get a set of RFIDs, look up Nutritions_Database (if RFID not registered, drop),
+                get their name, and net nutrition for RFID records from last step
+                reshape into: (note the 'time' entry)
+                {
+                'name1': [{'time': xxx, 'calories_kcal': 300, 'Sugar_g': 10}, {'time': xxx, 'calories_kcal': 150, 'Sugar_g': 5}],
+                'name2': [{'time': xxx, 'Chromium_µg': 5.1, 'Sugar_g': 10}, {'time': xxx, 'Chromium_µg': 2.45, 'Sugar_g': 5}]
+                }
+        Step 4: Find all nutrients, reshape and put into pd dataframe
+                df_calories_kcal: [{'time': xxx, 'name': xxx, 'amount' xxx}, ...]
+                df_sugar: [{'time': xxx, 'name': xxx, 'amount' xxx}, ...]
+        Step 5: For each df_<nutrition_name>, for 1) whole week / whole dataframe,  2) grouped into each day
+                    calculate sum(amount) and groupby(name).sum
+        Step 6: Form result
+                calories --- Weekly ----
+                          |            | --- beef -- as below 
+                          |            | --- butter
+                          |            | --- ... 
+                          |
+                          |
+                          |-- Monday --| --- beef -- as below 
+                          |            | --- butter
+                          |            | --- ... 
+                          | 
+                          |-- Tuesday --
+                          | 
+                          | 
+                          |- ...
+                
+                Repeat for other nutritions
+
+                {
+                    'total': 10000,
+                    'beef': 4000,
+                    'butter': 1500,
+                    'milk': 400,
+                    'salt': 100,
+                    'oil': 3000,
+                    'chicken': 1000,
+                    'dv': dv['<nutrition name>']
+                }
+                
+                result = 
+                {
+                    'ok': True,
+                    'date_order': ['Tuesday', 'Wednesday', ..., 'Monday'],
+                    'data': <as above>
+                }
+        '''
+        return make_response(json.dumps({'ok': False, 'message': 'Not Implemented'}), 500)
+        # return make_response(json_data, 200)
     else:
         return make_response('Invalid request', 400)
 
 
 @app.route('/visualize_ingredient', methods=['GET'])
 def get_visualization_data_one_ingredient():
-    params = json.loads(request.json)
+    params = request.values
     if all([i in params.keys() for i in ['Client-Id', 'RFID-Id']]):
         esp_id, rfid = params['Client-Id'], params['RFID-Id']
         # TODO: Query database, format output data, return
@@ -120,12 +169,11 @@ def get_visualization_data_one_ingredient():
 
 @app.route('/get_all_ingredient', methods=['GET'])
 def get_all_ingredient_weight():
-    params = json.loads(request.json)
+    params = request.values
     if 'Client-Id' in params.keys():
         esp_id = params['Client-Id']
-        # TODO: Query database, format output data, return
-        fake_data = [{'rfid' : 1, 'recent_weight' : 90, 'last_refill' : 100},
-                {'rfid' : 2, 'recent_weight' : 800, 'last_refill' : 1000}]
+        fake_data = [{'rfid': 1, 'recent_weight': 90, 'last_refill': 100},
+                     {'rfid': 2, 'recent_weight': 800, 'last_refill': 1000}]
         json_data = json.dumps(fake_data)
         return make_response(json_data, 200)
     else:
