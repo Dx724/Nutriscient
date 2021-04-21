@@ -14,6 +14,7 @@ void main() async {
   await loadConstants();
   await fcmInit();
   await getVisualizationData();
+  await getIngredientsListData();
   await SystemChrome.setPreferredOrientations(<DeviceOrientation>[DeviceOrientation.portraitUp, DeviceOrientation.portraitDown])
       .then((_) => runApp(MyApp()));
 }

@@ -57,8 +57,8 @@ class TableView extends StatelessWidget {
                                 PaginatedDataTable.defaultRowsPerPage),
                             columns: [
                               DataColumn(label: Text('Name')),
-                              DataColumn(label: Text('Weight')),
-                              DataColumn(label: Text('Percent Left')),
+                              DataColumn(label: Text('Used\n(kg)')),
+                              DataColumn(label: Text('Days\nSince\nRefill (d)')),
                             ],
                             source: IngredientTableData(
                               context: context,

@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class IngredientRow {
   IngredientRow(
     this.name,
-    this.weight,
-    this.percentLeft,
+    this.consumed,
+    this.lastRefill,
   );
 
   final String name;
-  final double weight;
-  final double percentLeft;
+  final double consumed;
+  final double lastRefill;
 
   bool selected = false;
 }
@@ -41,8 +41,11 @@ class IngredientTableData extends DataTableSource {
       },
       cells: [
         DataCell(Text(row.name)),
-        DataCell(Text(row.weight.toString())),
-        DataCell(Text(row.percentLeft.toString())),
+        DataCell(Text(row.consumed.toStringAsFixed(4))),
+        DataCell(Text(
+            ((DateTime.now().millisecondsSinceEpoch/1000 - row.lastRefill) / 86400).floor().toString()
+            // row.lastRefill.toString()
+        )),
       ],
     );
   }

@@ -159,14 +159,13 @@ class _VisualizeScreenState extends State<VisualizeScreen>
             Interval((1 / count) * 2, 1.0, curve: Curves.fastOutSlowIn))),
         animationController: widget.animationController,
         chart: barChart,
-        title: 'Weekly $currentNutrient Consumption',
+        title: 'Daily $currentNutrient Consumption \n(% DV)',
       ),
     );
   }
 
   Future<bool> getData() async {
     await Future<dynamic>.delayed(const Duration(milliseconds: 50));
-    currentNutrient = "Sugar";
     return true;
   }
 
@@ -275,7 +274,9 @@ class _VisualizeScreenState extends State<VisualizeScreen>
                               buttonText: 'Refresh',
                               callback: () {
                                 getVisualizationData().then((value) {
-                                  // TODO
+                                  setState(() {
+                                    rebuildCharts();
+                                  });
                                 });
                               },
                               icon: Icons.refresh,

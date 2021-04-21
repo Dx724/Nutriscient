@@ -70,7 +70,7 @@ Future<Map> getVisualizeOne(String rfid) async {
     throw Exception('API Call Failed');
 }
 
-Future<Map> getIngredients() async {
+Future<List> getIngredients() async {
   final response = await _getIngredients();
   if (response.statusCode == 200) {
     var parsed = jsonDecode(response.body);

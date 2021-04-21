@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class TitleView extends StatelessWidget {
   final String titleTxt;
   final String subTxt;
+  final IconData icon;
   final AnimationController animationController;
   final Animation animation;
   final Function callback;
@@ -12,6 +13,7 @@ class TitleView extends StatelessWidget {
       {Key key,
       this.titleTxt: "",
       this.subTxt: "",
+      this.icon: Icons.arrow_forward,
       this.animationController,
       this.animation,
       this.callback})
@@ -81,7 +83,7 @@ class TitleView extends StatelessWidget {
                 height: 38,
                 width: 26,
                 child: Icon(
-                  Icons.arrow_forward,
+                  icon,
                   color: NutriscientAppTheme.darkText,
                   size: 18,
                 ),
