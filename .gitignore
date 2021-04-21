@@ -139,3 +139,4 @@ dmypy.json
 cython_debug/
 WorkingData/~$SteadyCalibrationCurve.xlsx
 ESP8266/tag_read.py
+ESP8266/wifi.txt
