@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 String kBackend_default = 'http://ec2-35-153-232-54.compute-1.amazonaws.com:8000';
@@ -8,6 +6,11 @@ String kBackend = '';
 
 String kScaleId_default = '7d0d8300';
 String kScaleId = '';
+
+int kCaloriesTotal = 2000;
+int kCarbsTotal = 1275;
+int kProteinTotal = 150;
+int kFatTotal = 178;
 
 Future<void> loadConstants() async {
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
