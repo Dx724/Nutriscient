@@ -229,10 +229,11 @@ def wifi_setup():
     print("Connected to Wi-Fi!")
 
 def send_to_server(uid, rfid, kg):
-    wparam = {'Client-Id': uid, 'RFID-Id': rfid, 'Weight': kg}
+    #wparam = {'Client-Id': uid, 'RFID-Id': rfid, 'Weight': kg}
+    req_target = API_ENDPOINT + "?Client-Id={}&RFID-Id={}&Weight={}".format(uid, rfid, kg)
     for _ in range(DATA_SEND_TRIES):
         try:
-            res = urequests.post(API_ENDPOINT, params=wparam)
+            res = urequests.post(req_target)
             if res.status_code == 200:
                 return
         except OSError:
