@@ -13,11 +13,12 @@ class RFID_Database:
         client = MongoClient('localhost', 27017)
         self.db = client['Nutriscient_RFID']
 
-    def insert(self, esp_id, rfid, ingredient_name):
+    def insert(self, esp_id, rfid, ingredient_name, do_track):
         col_name = 'ESP' + esp_id
         collection = self.db[col_name]
         post = {'rfid' : rfid,
                 'ingredient_name' : ingredient_name,
+                'do_track' : do_track,
                 'time' : time.time()}
         if collection.count_documents({'rfid' : rfid, 'ingredient_name' : ''}) != 0:
             """ Completing registration for {rfid} """
@@ -89,12 +90,14 @@ class Weight_Database:
         client = MongoClient('localhost', 27017)
         self.db = client['Nutriscient_weight']
 
-    def insert(self, esp_id, rfid, weight):
+    def insert(self, esp_id, rfid, weight, epoch):
         col_name = 'ESP' + esp_id
         collection = self.db[col_name]
+        if epoch is None:
+            epoch = time.time()
         post = {'rfid' : rfid,
                 'weight' : weight,
-                'time' : time.time()}
+                'time' : epoch}
         collection.insert_one(post)
 
 
