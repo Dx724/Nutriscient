@@ -69,13 +69,12 @@ def return_unregistered_rfid():
 def label_rfid():
     """ Add record in database to correspond RFID with actual food item """
     params = request.values
-    if all([i in params.keys() for i in ['Client-Id', 'RFID-Id', 'Ingredient-Id']]):
-        esp_id, rfid, ingredient_id = params['Client-Id'], params['RFID-Id'], params['Ingredient-Id']
-        print(esp_id, rfid, ingredient_id)
+    if all([i in params.keys() for i in ['Client-Id', 'RFID-Id', 'Ingredient-Id', 'Do-Track']]):
+        esp_id, rfid, ingredient_id, do_track = params['Client-Id'], params['RFID-Id'], params['Ingredient-Id'], params['Do-Track']
         nutrition = get_ingredient_nutrition(ingredient_id)
         if nutrition is not None:
             ingredient_name, ingredient_nutrition = nutrition
-            rfid_db.insert(esp_id, rfid, ingredient_name)
+            rfid_db.insert(esp_id, rfid, ingredient_name, do_track)
             nutritions_db.insert(esp_id, rfid, ingredient_name, ingredient_nutrition)
             return make_response(json.dumps({'ok': True}))
         else:
