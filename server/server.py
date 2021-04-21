@@ -1,5 +1,7 @@
 import json
 import traceback
+import time
+import datetime
 from flask import Flask, make_response, request
 
 from util import get_ingredient_nutrition, RFID_Database, Nutritions_Database, Weight_Database
@@ -8,6 +10,7 @@ app = Flask(__name__)
 rfid_db = RFID_Database()
 nutritions_db = Nutritions_Database()
 weight_db = Weight_Database()
+
 
 @app.route('/')
 def hello_world():
@@ -56,7 +59,7 @@ def return_unregistered_rfid():
             response["exist"] = True
         response = json.dumps(response)
         return make_response(response, 200)
-    else: 
+    else:
         msg = traceback.format_exc()
         print(f'Server error: {msg}')
         return make_response(f'Server error: {msg}', 500)
@@ -107,17 +110,20 @@ def get_visualization_data_all():
         weight_all_list = list(weight_all_cursor)
 
         unique_rfids = weight_all_cursor.distinct('rfid')
-        res = [] """ contains all the weights from the past week, grouped by rfid """
+        res = []
+        """ contains all the weights from the past week, grouped by rfid """
         for rfid in unique_rfids:
-            weight_rfid_cursor = weight_all_cursor.collection.find({'rfid' : rfid})
+            weight_rfid_cursor = weight_all_cursor.collection.find({'rfid': rfid})
+            weight_rfid_cursor = weight_rfid_cursor.sort('_id', 1)
+            """ earliest first """
             weight_rfid_list = list(weight_rfid_cursor)
             res_rfid = []
             for weight_rfid_entry in weight_rfid_list:
-                weight_rfid = {'weight' : weight_rfid_entry['weight'],
-                        'time' : weight_rfid_entry['time']}
+                weight_rfid = {'weight': weight_rfid_entry['weight'],
+                               'time': weight_rfid_entry['time']}
                 res_rfid.append(weight_rfid)
-            weight_rfid_grouped = {'rfid' : rfid,
-                    'weights' : res_rfid}
+            weight_rfid_grouped = {'rfid': rfid,
+                                   'weights': res_rfid}
             res.append(weight_rfid_grouped)
         # print(res)
 
@@ -130,6 +136,18 @@ def get_visualization_data_all():
                 'name1': [{'time': xxx, 'calories_kcal': 300, 'Sugar_g': 10}, {'time': xxx, 'calories_kcal': 150, 'Sugar_g': 5}],
                 'name2': [{'time': xxx, 'Chromium_µg': 5.1, 'Sugar_g': 10}, {'time': xxx, 'Chromium_µg': 2.45, 'Sugar_g': 5}]
                 }
+        '''
+        nutritions_col = nutritions_db.db['ESP' + esp_id]
+        nutritions_list = list(nutritions_col.find())
+        res = {}
+        """ name and nutritions of all RFIDs """
+        for nutritions in nutritions_list:
+            rfid = nutritions['rfid']
+            nutritions_entry = (nutritions['name'], nutritions['nutrition'])
+            res[rfid] = nutritions_entry
+        # print(res)
+
+        '''
         Step 4: Find all nutrients, reshape and put into pd dataframe
                 df_calories_kcal: [{'time': xxx, 'name': xxx, 'amount' xxx}, ...]
                 df_sugar: [{'time': xxx, 'name': xxx, 'amount' xxx}, ...]
@@ -150,7 +168,7 @@ def get_visualization_data_all():
                           | 
                           | 
                           |- ...
-                
+
                 Repeat for other nutritions
 
                 {
@@ -163,7 +181,7 @@ def get_visualization_data_all():
                     'chicken': 1000,
                     'dv': dv['<nutrition name>']
                 }
-                
+
                 result = 
                 {
                     'ok': True,
@@ -175,6 +193,7 @@ def get_visualization_data_all():
         # return make_response(json_data, 200)
     else:
         return make_response('Invalid request', 400)
+
 
 """
 @app.route('/visualize_ingredient', methods=['GET'])
@@ -191,6 +210,7 @@ def get_visualization_data_one_ingredient():
     else:
         return make_response('Invalid request', 400)
 """
+
 
 @app.route('/get_all_ingredient', methods=['GET'])
 def get_all_ingredient_weight():
