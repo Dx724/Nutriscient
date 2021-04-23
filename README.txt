@@ -22,7 +22,6 @@ SCK to 15
 DT to 16
 
 Website Notes:
-- Put video link
 - Architecture diagram, talk about it
 - Talk about server stuff (architecture section?)
 - Describe prototype
@@ -33,4 +32,3 @@ Website Notes:
 - Reusability of RFID tags?
 - Additional features (special card, diet/condition-related notifications)
 - Cite nutrition DVs, other scientific references?
-- Add batteries?
