@@ -8,7 +8,7 @@ import pandas as pd
 from flask import Flask, make_response, request
 
 from util import get_ingredient_nutrition, RFID_Database, Nutritions_Database, Weight_Database
-import firebase
+from fcm import push_notification
 
 app = Flask(__name__)
 rfid_db = RFID_Database()
@@ -43,12 +43,14 @@ def add_data():
                 epoch = None
             weight_db.insert(esp_id, rfid, float(weight), epoch)
             if rfid_db.is_new_rfid(esp_id, rfid):
-                firebasae.push_notification(
-                    title='Register New Item', 
-                    body=f'Tell us what is {weight:.2f}kg!',
-                    field_a=weight,
-                    topic=esp_id
-                    )
+                if 'No-Notif' not in params.keys() or not params['No-Notif']:
+                    print(f'New item: {rfid}. Pushing notification')
+                    push_notification(
+                        title='Register New Item', 
+                        body=f'Tell us what is {float(weight):.2f}kg!',
+                        field_a=weight,
+                        topic=esp_id
+                        )
             return make_response('OK')
         else:
             return make_response('Invalid request', 400)
@@ -72,9 +74,7 @@ def return_unregistered_rfid():
         response = json.dumps(response)
         return make_response(response, 200)
     else:
-        msg = traceback.format_exc()
-        print(f'Server error: {msg}')
-        return make_response(f'Server error: {msg}', 500)
+        return make_response(f'Expected parameter: Client-Id!', 400)
 
 
 @app.route('/label_rfid', methods=['POST'])
@@ -219,7 +219,11 @@ def get_visualization_data_all():
         response = dict()
         for nutrition_name in all_nutritions:
             df = all_df[nutrition_name]
+            df.drop(df[df['time'] < time.time() - 7*86400].index)
             df['weekday'] = df['time'].apply(epoch_to_weekday)
+            # Get rid of last week today's data
+            today_weekday = epoch_to_weekday(time.time())
+            df = df.drop(df[(df['weekday'] == today_weekday) & (df['time'] < time.time() - 86400)].index)
 
             def get_result(sub_df):
                 result = {'all': sub_df['amount'].sum()}
@@ -229,7 +233,7 @@ def get_visualization_data_all():
 
             response[nutrition_name] = {'weekly': get_result(df)}
 
-            start_of_week = epoch_to_weekday(df['time'].min())
+            start_of_week = epoch_to_weekday(time.time() + 86400)
             weekday_offset = np.where(weekdays == start_of_week)[0][0]
             visualize_weekdays = list(np.roll(weekdays, -weekday_offset))
 
@@ -265,9 +269,56 @@ def get_all_ingredient_weight():
     params = request.values
     if 'Client-Id' in params.keys():
         esp_id = params['Client-Id']
+        weight_col = weight_db.db['ESP' + esp_id]
+        rfid_col = rfid_db.db['ESP' + esp_id]
+
+        unique_rfids = weight_col.distinct('rfid')
+        res = []
+        for rfid in unique_rfids:
+            rfid_entry = rfid_col.find_one({'rfid' : rfid})
+            if(rfid == '10'):
+                print(rfid_entry['do_track'])
+            if rfid_entry['ingredient_name'] != '' and rfid_entry['do_track'].lower() == 'true':
+                """ RFID is registered and should be tracked """
+                print(rfid)
+                rfid_weights = []
+                rfid_weights_cursor = weight_col.find({'rfid' : rfid}).sort('_id', 1)
+                for rfid_weights_entry in list(rfid_weights_cursor):
+                    rfid_weights.append(rfid_weights_entry['weight'])
+                rfid_weights = np.array(rfid_weights)
+                # print(rfid_weights)
+                """ use minimum weight as container weight for taring """
+                rfid_container_weight = np.amin(rfid_weights)
+                # print(rfid_container_weight)
+
+                rfid_weights = np.concatenate([[0], rfid_weights])
+                """ for registration i.e. first refill """
+                rfid_current_weight = rfid_weights[-1] - rfid_container_weight
+                # print(rfid_current_weight)
+                rfid_used_weights = -np.diff(rfid_weights)
+                # print(rfid_used_weights)
+                rfid_refill_idx = np.where(rfid_used_weights < 0)[0]
+                rfid_refill_weights = rfid_weights[rfid_refill_idx + 1]
+                rfid_latest_refill = rfid_refill_weights[-1] - rfid_container_weight
+                # print(rfid_latest_refill)
+
+                rfid_latest_refill_db_entry = weight_col.find_one({'$and' : [{'rfid' : rfid},
+                        {'weight' : rfid_refill_weights[-1]}]})
+                # print(rfid_latest_refill_db_entry)
+                rfid_latest_refill_time = rfid_latest_refill_db_entry['time']
+                # print(rfid_latest_refill_time)
+
+                rfid_track_entry = {'name' : rfid_entry['ingredient_name'],
+                        'recent_weight' : rfid_current_weight,
+                        'last_refill' : rfid_latest_refill, 
+                        'latest_refill_time' : rfid_latest_refill_time}
+                res.append(rfid_track_entry)
+
+        """
         fake_data = [{'rfid': 1, 'recent_weight': 90, 'last_refill': 100},
                      {'rfid': 2, 'recent_weight': 800, 'last_refill': 1000}]
-        json_data = json.dumps(fake_data)
+        """
+        json_data = json.dumps(res)
         return make_response(json_data, 200)
     else:
         return make_response('Invalid request', 400)

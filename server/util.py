@@ -62,6 +62,8 @@ class RFID_Database:
             # New RFID
             self.insert_incomplete(esp_id, rfid)
             return True
+        elif collection.count_documents({'rfid' : rfid, 'ingredient_name' : ''}) != 0:
+            return True
         else:
             return False
 
@@ -98,6 +100,7 @@ class Weight_Database:
         post = {'rfid' : rfid,
                 'weight' : weight,
                 'time' : epoch}
+        print(post)
         collection.insert_one(post)
 
 
