@@ -8,6 +8,10 @@ import 'package:nutriscient/util/constants.dart';
 import 'package:nutriscient/util/spoonacular_api.dart';
 import 'package:flutter/material.dart';
 
+import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+
+
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key key, this.animationController}) : super(key: key);
 
@@ -114,6 +118,22 @@ class _RegisterScreenState extends State<RegisterScreen>
   //   listViews.insert(0,
   //   );
   // }
+  Future<String> scanBarcodeNormal() async {
+    String barcodeScanRes;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          '#ff6666', 'Cancel', true, ScanMode.BARCODE);
+    } on PlatformException {
+      barcodeScanRes = 'error: Failed to get platform version.';
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return 'error: Widget removed';
+    return barcodeScanRes;
+  }
 
   void addAllListData() {
     const int count = 3;
@@ -122,14 +142,42 @@ class _RegisterScreenState extends State<RegisterScreen>
       listViews[0] = TitleView(
         // titleTxt: 'Adding a new ingredient',
         titleTxt: titleText,
-        subTxt: 'Help',
+        subTxt: 'Scan',
         animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
             parent: widget.animationController,
             curve:
                 Interval((1 / count) * 0, 1.0, curve: Curves.fastOutSlowIn))),
         animationController: widget.animationController,
+        icon: Icons.qr_code_scanner,
         callback: () {
-          debugPrint("Show help");
+          scanBarcodeNormal().then((value) {
+            if (value.startsWith('error:')) {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      content:
+                      Text("Barcode scan\b$value"),
+                    );
+                  });
+            } else if (value == '-1') {
+              print("Barcode scan calcelled");
+            } else {
+              barcodeProductSearch(value).then((value) {
+                String message = 'Result: Not found';
+                if (value.length != 0)
+                  message = "Result: $value";
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        content:
+                        Text(message),
+                      );
+                    });
+              });
+            }
+          });
         },
       );
       return;

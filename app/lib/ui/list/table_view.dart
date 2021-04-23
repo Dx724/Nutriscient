@@ -58,7 +58,7 @@ class TableView extends StatelessWidget {
                             columns: [
                               DataColumn(label: Text('Name')),
                               DataColumn(label: Text('Used\n(kg)')),
-                              DataColumn(label: Text('Days\nSince\nRefill (d)')),
+                              DataColumn(label: Text('Days\nSince\nRefill')),
                             ],
                             source: IngredientTableData(
                               context: context,

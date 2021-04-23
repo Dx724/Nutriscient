@@ -43,6 +43,8 @@ class _NutriscientHomeScreenState extends State<NutriscientHomeScreen>
       tabBody = FeedScreen(animationController: animationController);
     else if (widget.redirectTo == 'register')
       tabBody = RegisterScreen(animationController: animationController);
+    else if (widget.redirectTo == 'list')
+      tabBody = IngredientsListScreen(animationController: animationController);
     else
       throw Exception('Invalid redirectTo parameter: ${widget.redirectTo}');
 

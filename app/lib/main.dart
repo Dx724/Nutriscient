@@ -36,6 +36,7 @@ class MyApp extends StatelessWidget {
       home: NutriscientHomeScreen(),
       routes: {
         '/message': (context) => NutriscientHomeScreen(redirectTo: 'register'),
+        '/list': (context) => NutriscientHomeScreen(redirectTo: 'list'),
       }
     );
   }

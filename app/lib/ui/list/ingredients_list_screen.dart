@@ -219,8 +219,11 @@ class _IngredientsListScreenState extends State<IngredientsListScreen>
                               buttonText: 'Refresh',
                               callback: () {
                                 getIngredientsListData().then((value) {
-                                  ingredientTableData = _buildIngredientList();
-                                  addAllListData();
+                                  setState(() {
+                                    Navigator.pushNamed(context, '/list');
+                                  });
+                                  // ingredientTableData = _buildIngredientList();
+                                  // addAllListData();
                                 });
                               },
                               icon: Icons.refresh,

@@ -38,6 +38,7 @@ dependencies:
   firebase_messaging: ^9.1.2
   firebase_core: ^1.0.4
   flutter_local_notifications: ^5.0.0+1
+  flutter_barcode_scanner: ^2.0.0
 
 dev_dependencies:
   flutter_test:
