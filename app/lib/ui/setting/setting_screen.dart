@@ -3,6 +3,7 @@ import 'package:nutriscient/ui/nutriscient_app_theme.dart';
 import 'package:nutriscient/ui/setting/settings_view.dart';
 import 'package:nutriscient/util/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:nutriscient/util/fcm.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({Key key, this.animationController}) : super(key: key);
@@ -184,6 +185,7 @@ class _SettingScreenState extends State<SettingScreen>
                                 buttonText: "Save",
                                 callback: () async {
                                   await saveAllConstants();
+                                  await updatePushNotiSubscription(true);
                                 })
                           ],
                         ),
