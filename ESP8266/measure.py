@@ -36,7 +36,7 @@ def oled_text(t1, t2=None, t3=None):
     if t3 is not None:
         if len(t3) > 16:
             print("Length Warning: ", t3)
-        oled.text("{}".format(t2), 0, 20)
+        oled.text("{}".format(t3), 0, 20)
     oled.show()
 
 def uid_to_str(uid):
@@ -93,6 +93,8 @@ DOUBLE_TAP_DUR_MIN = 200 # in milliseconds
 DOUBLE_TAP_DUR_MAX = 750 # in milliseconds
 CALIB_FILE = "nutriscient.calibration"
 MOV_AVG_FACTOR = 0.35
+API_ENDPOINT = "http://ec2-35-153-232-54.compute-1.amazonaws.com:8000/add_weight"
+DATA_SEND_TRIES = 5
 ### Configuration End ###
 
 ### State Start ###
@@ -204,8 +206,40 @@ def read_tag():
         if stat == rdr.OK:
             (stat, raw_uid) = rdr.anticoll()
             if stat == rdr.OK:
-                return uid_to_str(raw_uid)    
+                return uid_to_str(raw_uid)
+    return None
 ### Tag Reader End ###
+
+### Networking Start ###
+def wifi_setup():
+    # Get Network SSID and Password
+    with open("wifi.txt", "r") as f:
+        ssid = f.readline().rstrip("\r\n")
+        password = f.readline().rstrip("\r\n")
+
+    # Connect to Wi-Fi
+    sta = network.WLAN(network.STA_IF)
+    if not sta.isconnected():
+        sta.active(True)
+        sta.connect(ssid, password)
+        print("Connecting to Wi-Fi")
+        oled_text("Connecting...")
+        while not sta.isconnected():
+            pass
+    print("Connected to Wi-Fi!")
+
+def send_to_server(uid, rfid, kg):
+    #wparam = {'Client-Id': uid, 'RFID-Id': rfid, 'Weight': kg}
+    req_target = API_ENDPOINT + "?Client-Id={}&RFID-Id={}&Weight={}".format(uid, rfid, kg)
+    for _ in range(DATA_SEND_TRIES):
+        try:
+            res = urequests.post(req_target)
+            if res.status_code == 200:
+                return
+        except OSError:
+            time.sleep_ms(10)
+    oled_text("Network Error.")
+### Networking End ###
 
 ### Callbacks Start ###
 ## Note: additional callbacks in Calibration section above ##
@@ -214,9 +248,15 @@ def on_clear():
 
 def on_measure(m):
     print("Measurement: {}".format(m))
+    uid = get_uid()
+    rfid_tag = read_tag()
+    kg_weight = round(hx.to_grams(m)/1000, 3)
     print("Tag: {}".format(read_tag()))
-    oled_text("Weight: {:.3f}kg".format(round(hx.to_grams(m)/1000, 3)), "ID: {}".format(get_uid()))
+    oled_text("Weight: {:.3f}kg".format(kg_weight), "ID: {}".format(uid),
+              "Tag Detected" if rfid_tag is not None else "No Tag Found")
     oled.invert(1)
+    if rfid_tag is not None: # Can send data after object is removed for speed
+        send_to_server(uid, rfid_tag, kg_weight)
 
 def on_tap():
     global last_tap_time
@@ -238,6 +278,8 @@ double_tap_cb = calib_start
 ### Callbacks End ###
 
 ### Pre-Loop Start ###
+wifi_setup()
+
 if not load_calibration():
     calib_start()
 else:

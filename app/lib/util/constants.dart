@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 String kBackend_default = 'http://ec2-35-153-232-54.compute-1.amazonaws.com:8000';
 String kBackend = '';
 
-String kScaleId_default = '7d0d8300';
+String kScaleId_default = '2f6f1400';
 String kScaleId = '';
 
 int kCaloriesTotal = 2000;

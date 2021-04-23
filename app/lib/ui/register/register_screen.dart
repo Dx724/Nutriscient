@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:nutriscient/ui/nutriscient_app_theme.dart';
 import 'package:nutriscient/ui/ui_view/search_box_view.dart';
 import 'package:nutriscient/ui/ui_view/title_view.dart';
@@ -29,11 +30,47 @@ class _RegisterScreenState extends State<RegisterScreen>
   Widget searchResultViewWidget;
 
   String rfidToRegister = '';
+  String titleText = 'Adding a new ingredient';
 
   Future<void> checkUnregistered() async {
+    if (listViews.length == 3) {
+      setState(() {
+        Navigator.pushNamed(context, '/');
+      });
+    }
     getUnregistered().then((result) {
       print("$result");
+      if (result['exist']) {
+        setState(() {
+          String placedTime = readTimestamp(result['time'].toInt());
+          titleText = 'Register an ingredient placed on the scale';
+          rfidToRegister = result['rfid'];
+        });
+      }
     });
+  }
+
+  String readTimestamp(int timestamp) {
+    var now = new DateTime.now();
+    var format = new DateFormat('HH:mm a');
+    var date = new DateTime.fromMicrosecondsSinceEpoch(timestamp * 1000);
+    var diff = date.difference(now);
+    var time = '';
+
+    if (diff.inSeconds <= 0 ||
+        diff.inSeconds > 0 && diff.inMinutes == 0 ||
+        diff.inMinutes > 0 && diff.inHours == 0 ||
+        diff.inHours > 0 && diff.inDays == 0) {
+      time = format.format(date);
+    } else {
+      if (diff.inDays == 1) {
+        time = diff.inDays.toString() + 'DAY AGO';
+      } else {
+        time = diff.inDays.toString() + 'DAYS AGO';
+      }
+    }
+
+    return time;
   }
 
   @override
@@ -65,19 +102,26 @@ class _RegisterScreenState extends State<RegisterScreen>
         }
       }
     });
-    super.initState();
 
+    super.initState();
     checkUnregistered().then((value) {
       addAllListData();
     });
   }
 
+  // void addTitle() {
+  //   int count = 3;
+  //   listViews.insert(0,
+  //   );
+  // }
+
   void addAllListData() {
     const int count = 3;
 
-    listViews.add(
-      TitleView(
-        titleTxt: 'Adding a new ingredient',
+    if (listViews.length != 0) {
+      listViews[0] = TitleView(
+        // titleTxt: 'Adding a new ingredient',
+        titleTxt: titleText,
         subTxt: 'Help',
         animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
             parent: widget.animationController,
@@ -87,8 +131,26 @@ class _RegisterScreenState extends State<RegisterScreen>
         callback: () {
           debugPrint("Show help");
         },
-      ),
-    );
+      );
+      return;
+    }
+
+    //
+    // if (listViews.length == 1)
+    //   listViews.removeAt(0);
+
+    listViews.add(TitleView(
+      // titleTxt: 'Adding a new ingredient',
+      titleTxt: titleText,
+      subTxt: 'Help',
+      animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+          parent: widget.animationController,
+          curve: Interval((1 / count) * 0, 1.0, curve: Curves.fastOutSlowIn))),
+      animationController: widget.animationController,
+      callback: () {
+        debugPrint("Show help");
+      },
+    ));
 
     listViews.add(
       SearchBoxView(
@@ -122,24 +184,24 @@ class _RegisterScreenState extends State<RegisterScreen>
 
   void resultSelected(int index) async {
     debugPrint("[$kScaleId]: RFID [$rfidToRegister] --> $index");
+    registerRfid(rfidToRegister, index).then((value) => checkUnregistered());
   }
 
   void buildSearchResults(List results) {
-      imageUrls = List<String>.generate(
-        results.length,
-            (int index) {
-          return 'https://spoonacular.com/cdn/ingredients_100x100/${results[index]['image']}';
-        },
-      );
+    imageUrls = List<String>.generate(
+      results.length,
+      (int index) {
+        return 'https://spoonacular.com/cdn/ingredients_100x100/${results[index]['image']}';
+      },
+    );
 
-      imageCaptions =
-      List<String>.generate(results.length, (int index) {
-        return results[index]['name'];
-      });
+    imageCaptions = List<String>.generate(results.length, (int index) {
+      return results[index]['name'];
+    });
 
-      itemIds = List<int>.generate(results.length, (int index) {
-        return results[index]['id'];
-      });
+    itemIds = List<int>.generate(results.length, (int index) {
+      return results[index]['id'];
+    });
 
     const int count = 3;
     setState(() {
@@ -170,6 +232,8 @@ class _RegisterScreenState extends State<RegisterScreen>
 
   @override
   Widget build(BuildContext context) {
+    addAllListData();
+
     return Container(
       color: NutriscientAppTheme.background,
       child: Scaffold(

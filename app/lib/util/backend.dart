@@ -5,14 +5,14 @@ import 'package:nutriscient/cred.dart';
 import 'package:nutriscient/util/constants.dart';
 
 Future<http.Response> _getUnregistered() {
-  final String _url = '$kBackend/return_unregistered_rfid';
-  return http.get(Uri.parse(_url), headers: {'Client-Id': '$kScaleId'});
+  final String _url = '$kBackend/return_unregistered_rfid?Client-Id=$kScaleId';
+  return http.get(Uri.parse(_url));
 }
 
 Future<http.Response> _registerRfid(String rfid, int ingredientId) {
   final String _url =
-      '$kBackend/label_rfid?Client-Id=$kScaleId&RFID-Id=$rfid&Ingredient-Id=$ingredientId';
-  return http.get(Uri.parse(_url));
+      '$kBackend/label_rfid?Client-Id=$kScaleId&RFID-Id=$rfid&Ingredient-Id=$ingredientId&Do-Track=true';
+  return http.post(Uri.parse(_url));
 }
 
 Future<http.Response> _getVisualizeAll() {
@@ -41,11 +41,17 @@ Future<Map> getUnregistered() async {
 }
 
 Future<bool> registerRfid(String rfid, int ingredientId) async {
+  if (rfid == null || rfid.length == 0) {
+    print("Attempting to register an empty RFID!");
+    return false;
+  }
   final response = await _registerRfid(rfid, ingredientId);
   if (response.statusCode == 200) {
     if (response.body == 'OK') return true;
-  } else
+  } else {
+    print("${response.body}");
     throw Exception('API Call Failed');
+  }
   return false;
 }
 
@@ -53,7 +59,10 @@ Future<Map> getVisualizeAll() async {
   final response = await _getVisualizeAll();
   if (response.statusCode == 200) {
     var parsed = jsonDecode(response.body);
-    return parsed;
+    if (parsed['ok'])
+      return jsonDecode(parsed['message']);
+    else
+      throw Exception('API Call Failed: $parsed');
   } else
     throw Exception('API Call Failed');
 }
@@ -67,7 +76,7 @@ Future<Map> getVisualizeOne(String rfid) async {
     throw Exception('API Call Failed');
 }
 
-Future<Map> getIngredients() async {
+Future<List> getIngredients() async {
   final response = await _getIngredients();
   if (response.statusCode == 200) {
     var parsed = jsonDecode(response.body);

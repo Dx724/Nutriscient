@@ -1,10 +1,12 @@
 import 'dart:math';
 
+import 'package:nutriscient/ui/common_widgets.dart';
 import 'package:nutriscient/ui/nutriscient_app_theme.dart';
 import 'package:nutriscient/ui/ui_view/title_view.dart';
 import 'package:nutriscient/ui/list/table_view.dart';
 import 'package:nutriscient/ui/models/row_data.dart';
 import 'package:flutter/material.dart';
+import 'package:nutriscient/util/data.dart';
 
 class IngredientsListScreen extends StatefulWidget {
   const IngredientsListScreen({Key key, this.animationController}) : super(key: key);
@@ -31,10 +33,9 @@ class _IngredientsListScreenState extends State<IngredientsListScreen>
         CurvedAnimation(
             parent: widget.animationController,
             curve: Interval(0, 0.5, curve: Curves.fastOutSlowIn)));
-    getIngredientData().then((result) {
-        ingredientTableData = result;
+
+        ingredientTableData = _buildIngredientList();
         addAllListData();
-    });
 
     scrollController.addListener(() {
       if (scrollController.offset >= 24) {
@@ -63,6 +64,7 @@ class _IngredientsListScreenState extends State<IngredientsListScreen>
 
   void addAllListData() {
     const int count = 1;
+    listViews = [];
 
     listViews.add(
       TitleView(
@@ -88,13 +90,22 @@ class _IngredientsListScreenState extends State<IngredientsListScreen>
   }
 
   Future<bool> getData() async {
-    await getIngredientData();
+    // await getIngredientData();
     return true;
   }
 
-  Future<List<IngredientRow>> getIngredientData() async {
-    await Future<dynamic>.delayed(const Duration(milliseconds: 500));
-    // TODO: Call /get_ingredients
+  List<IngredientRow> _buildIngredientList() {
+    List<IngredientRow> ret = [];
+    for (int i = 0; i < ingredientsList.length; i++) {
+      String name = ingredientsList[i]['name'];
+      double consumed = ingredientsList[i]['last_refill'] - ingredientsList[i]['recent_weight'];
+      double lastRefillTime = ingredientsList[i]['latest_refill_time'];
+      ret.add(
+        IngredientRow(name, consumed, lastRefillTime)
+      );
+    }
+    return ret;
+    
     return [
       IngredientRow('salt', 300, 30),
       IngredientRow('pepper', 50, 50),
@@ -204,6 +215,16 @@ class _IngredientsListScreenState extends State<IngredientsListScreen>
                                 ),
                               ),
                             ),
+                            buildButton(
+                              buttonText: 'Refresh',
+                              callback: () {
+                                getIngredientsListData().then((value) {
+                                  ingredientTableData = _buildIngredientList();
+                                  addAllListData();
+                                });
+                              },
+                              icon: Icons.refresh,
+                            )
                           ],
                         ),
                       )
