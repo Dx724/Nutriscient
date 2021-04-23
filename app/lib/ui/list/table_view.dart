@@ -12,7 +12,12 @@ class TableView extends StatelessWidget {
   final Widget chart;
   final List<IngredientRow> data;
 
-  TableView({Key key, this.animationController, this.animation, this.chart, this.data})
+  TableView(
+      {Key key,
+      this.animationController,
+      this.animation,
+      this.chart,
+      this.data})
       : super(key: key);
 
   @override
@@ -51,23 +56,26 @@ class TableView extends StatelessWidget {
                                   blurRadius: 10.0),
                             ],
                           ),
-                          child: PaginatedDataTable(
-                            // header: Text('Header Text'),
-                            rowsPerPage: min(data.length,
-                                PaginatedDataTable.defaultRowsPerPage),
-                            columns: [
-                              DataColumn(label: Text('Name')),
-                              DataColumn(label: Text('Used\n(kg)')),
-                              DataColumn(label: Text('Days\nSince\nRefill')),
-                            ],
-                            source: IngredientTableData(
-                              context: context,
-                              rows: this.data,
-                            ),
-                            sortColumnIndex: 2,
-                            // Percent Left
-                            showCheckboxColumn: false,
-                          ),
+                          child: data.length == 0
+                              ? Container()
+                              : PaginatedDataTable(
+                                  // header: Text('Header Text'),
+                                  rowsPerPage: min(data.length,
+                                      PaginatedDataTable.defaultRowsPerPage),
+                                  columns: [
+                                    DataColumn(label: Text('Name')),
+                                    DataColumn(label: Text('Used\n(kg)')),
+                                    DataColumn(
+                                        label: Text('Days\nSince\nRefill')),
+                                  ],
+                                  source: IngredientTableData(
+                                    context: context,
+                                    rows: this.data,
+                                  ),
+                                  sortColumnIndex: 2,
+                                  // Percent Left
+                                  showCheckboxColumn: false,
+                                ),
                         ),
                       ),
                     ],

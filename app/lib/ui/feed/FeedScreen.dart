@@ -1,3 +1,4 @@
+import 'package:nutriscient/ui/common_widgets.dart';
 import 'package:nutriscient/ui/feed/daily_intake_view.dart';
 import 'package:nutriscient/ui/ui_view/title_view.dart';
 import 'package:nutriscient/ui/nutriscient_app_theme.dart';
@@ -24,16 +25,30 @@ class _FeedScreenState extends State<FeedScreen>
 
   @override
   void initState() {
-    List<String> plotWeekdays = List<String>.from(visualizationData[nutritions[0]]['plot_weekdays']);
-    String today = plotWeekdays.last;
+    super.initState();
 
+    // Default value
     dailyIntakeData = {
-      'calories': visualizationData['Calories'][today]['all'],
-      'sugar': visualizationData['Sugar'][today]['all'],
-      'carbs': visualizationData['Net Carbohydrates'][today]['all'],
-      'protein': visualizationData['Protein'][today]['all'],
-      'fat': visualizationData['Fat'][today]['all'],
+      'calories': 0,
+      'sugar': 0,
+      'carbs':0,
+      'protein': 0,
+      'fat': 0,
     };
+
+    if (nutritions.length != 0) {
+      List<String> plotWeekdays = List<String>.from(
+          visualizationData[nutritions[0]]['plot_weekdays']);
+      String today = plotWeekdays.last;
+
+      dailyIntakeData = {
+        'calories': visualizationData.keys.contains('Calories') ? visualizationData['Calories'][today]['all'] : 0,
+        'sugar': visualizationData.keys.contains('Sugar') ? visualizationData['Sugar'][today]['all'] : 0,
+        'carbs': visualizationData.keys.contains('Net Carbohydrates') ? visualizationData['Net Carbohydrates'][today]['all'] : 0,
+        'protein': visualizationData.keys.contains('Protein') ? visualizationData['Protein'][today]['all'] : 0,
+        'fat': visualizationData.keys.contains('Fat') ? visualizationData['Fat'][today]['all'] : 0,
+      };
+    }
 
     topBarAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(
@@ -63,7 +78,6 @@ class _FeedScreenState extends State<FeedScreen>
         }
       }
     });
-    super.initState();
   }
 
   void addAllListData() {

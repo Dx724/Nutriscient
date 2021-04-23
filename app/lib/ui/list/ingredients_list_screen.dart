@@ -68,7 +68,7 @@ class _IngredientsListScreenState extends State<IngredientsListScreen>
 
     listViews.add(
       TitleView(
-        titleTxt: 'Time for some restocking?',
+        titleTxt: ingredientTableData.length == 0 ? 'Start tracking by adding an item' : 'Time for some restocking?',
         animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
             parent: widget.animationController,
             curve:
