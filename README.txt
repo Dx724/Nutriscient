@@ -32,3 +32,4 @@ Website Notes:
 - Reusability of RFID tags?
 - Additional features (special card, diet/condition-related notifications)
 - Cite nutrition DVs, other scientific references?
+- RFID vs. Barcodes vs. Computer Vision -- Design Matrix
