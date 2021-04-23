@@ -219,7 +219,8 @@ def get_visualization_data_all():
         response = dict()
         for nutrition_name in all_nutritions:
             df = all_df[nutrition_name]
-            df.drop(df[df['time'] < time.time() - 7*86400].index)
+            # Get rid of data older than 7*24 hours
+            df = df.drop(df[df['time'] < time.time() - 7*86400].index)
             df['weekday'] = df['time'].apply(epoch_to_weekday)
             # Get rid of last week today's data
             today_weekday = epoch_to_weekday(time.time())
