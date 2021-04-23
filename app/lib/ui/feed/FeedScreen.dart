@@ -27,25 +27,26 @@ class _FeedScreenState extends State<FeedScreen>
   void initState() {
     super.initState();
 
+    // Default value
+    dailyIntakeData = {
+      'calories': 0,
+      'sugar': 0,
+      'carbs':0,
+      'protein': 0,
+      'fat': 0,
+    };
+
     if (nutritions.length != 0) {
       List<String> plotWeekdays = List<String>.from(
           visualizationData[nutritions[0]]['plot_weekdays']);
       String today = plotWeekdays.last;
 
       dailyIntakeData = {
-        'calories': visualizationData['Calories'][today]['all'],
-        'sugar': visualizationData['Sugar'][today]['all'],
-        'carbs': visualizationData['Net Carbohydrates'][today]['all'],
-        'protein': visualizationData['Protein'][today]['all'],
-        'fat': visualizationData['Fat'][today]['all'],
-      };
-    } else {
-      dailyIntakeData = {
-        'calories': 0,
-        'sugar': 0,
-        'carbs':0,
-        'protein': 0,
-        'fat': 0,
+        'calories': visualizationData.keys.contains('Calories') ? visualizationData['Calories'][today]['all'] : 0,
+        'sugar': visualizationData.keys.contains('Sugar') ? visualizationData['Sugar'][today]['all'] : 0,
+        'carbs': visualizationData.keys.contains('Net Carbohydrates') ? visualizationData['Net Carbohydrates'][today]['all'] : 0,
+        'protein': visualizationData.keys.contains('Protein') ? visualizationData['Protein'][today]['all'] : 0,
+        'fat': visualizationData.keys.contains('Fat') ? visualizationData['Fat'][today]['all'] : 0,
       };
     }
 
