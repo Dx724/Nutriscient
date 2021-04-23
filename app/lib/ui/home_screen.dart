@@ -1,7 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:nutriscient/ui/feed/FeedScreen.dart';
 import 'package:nutriscient/ui/models/tabIcon_data.dart';
-import 'package:nutriscient/ui/traning/training_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:nutriscient/util/fcm.dart';
 import 'bottom_navigation_view/bottom_bar_view.dart';

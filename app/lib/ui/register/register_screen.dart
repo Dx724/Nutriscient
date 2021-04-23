@@ -161,7 +161,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                     );
                   });
             } else if (value == '-1') {
-              print("Barcode scan calcelled");
+              print("Barcode scan cancelled");
             } else {
               barcodeProductSearch(value).then((value) {
                 String message = 'Result: Not found';
