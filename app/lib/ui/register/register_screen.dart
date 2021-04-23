@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:nutriscient/ui/common_widgets.dart';
 import 'package:nutriscient/ui/nutriscient_app_theme.dart';
 import 'package:nutriscient/ui/ui_view/search_box_view.dart';
 import 'package:nutriscient/ui/ui_view/title_view.dart';
@@ -167,14 +168,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                 String message = 'Result: Not found';
                 if (value.length != 0)
                   message = "Result: $value";
-                showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        content:
-                        Text(message),
-                      );
-                    });
+                  showMessage(context, message);
               });
             }
           });
@@ -220,14 +214,7 @@ class _RegisterScreenState extends State<RegisterScreen>
     if (results.length != 0)
       buildSearchResults(results);
     else
-      showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              content:
-                  Text("Cannot find $searchText\n\nPress anywhere to continue"),
-            );
-          });
+      showMessage(context, "Cannot find $searchText\n\nPress anywhere to continue");
   }
 
   void resultSelected(int index) async {

@@ -193,3 +193,14 @@ BoxDecoration buildCardDecoration() {
     ],
   );
 }
+
+void showMessage(BuildContext context, String message) {
+  showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content:
+          Text(message),
+        );
+      });
+}
