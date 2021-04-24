@@ -119,13 +119,46 @@
 								<h2>System</h2>
 							</header>
 
-							<p align="left">Remember to use combination of descriptions, photos, and figures</p>
-
 							<h3 align="left">Architecture</h3>
 
-							<p align="left">Blah blah blah</p>
+                            <article class="item">
+								<a class="image fit"><img src="images/system_1.png" alt="" /></a>
+								<header>
+									<h3>System Architecture Overview</h3>
+								</header>
+							</article>
+							<p align="left">From the high level, first, there is an embedded system component that detects different objects and weighs them. To measure weight, we will be using a load cell. To identify different objects, we will use RFID sticker tags attached onto different things and a RFID reader writer to register and then recognize them. We will also be using an OLED screen to display information. All these components are connected onto a ESP8266 microcontroller, which interfaces with the sensors and cloud.</p>
+                            
+                            <p align="left">The cloud interconnects the user with the smart scale. A web server is built and deployed along with a database, which accepts and stores historical weight data, allows the user to set up through the app, and process data for visualization within the user app.</p>
 
 
+                            <h3 align="left">Data Flow</h3>
+                            <p align="left">We used Flask to implement the backend, which was hosted on an AWS EC2 instance. The backend connects the ESP8266 smart scale, the smartphone app, as well as the MongoDB databases together.</p>
+
+                            <article class="item">
+								<a class="image fit"><img src="images/system_2.png" alt="" /></a>
+								<header>
+									<h3>Data Flow Chart -- Weight Data</h3>
+								</header>
+							</article>
+                            
+                            
+                            <p align="left">Once the ESP8266 obtains a new weight measurement, it sends the weight as well as the associated RFID to the Flask backend in the form of a POST request. The backend will record the weight reading, the RFID, and the timestamp in a dedicated database, under table scale-id. If the RFID has not been seen before, the backend will also mark it as unregistered and send a push notification to the app.</p>
+                            
+                            <article class="item">
+								<a class="image fit"><img src="images/system_3.png" alt="" /></a>
+								<header>
+									<h3>Data Flow Chart -- Getting Nutritional Value</h3>
+								</header>
+							</article>
+                            
+                            <p align="left">When the App is opened after the notification fires, it asks the backend for the unregistered RFID via a GET request. Then the App prompts the user to either scan the barcode on the item, or manually enter a name for the ingredient.If the user chooses to use barcode, gtinsearch API is used to determine the name of the ingredient associated with the barcode.</p>
+
+                            <p align="left">After the ingredient name is determined, a search on an online nutritional value database -- Spoonacular is performed, and potential results on the database with nutritional value information are presented to the user with its picture, which the user selects, then the selection updated in the backend through a POST API call. The detailed nutritional information is then retrieved from the same API and stored into a dedicated database, linking the RFID with its nutritional value.</p>
+
+                            <p align="left">When the user wants to take a look at the visualizations of their nutrition intake or grocery needs on the app, the app will send a GET request to the Flask backend. On this request, the backend will query the databases, perform cleaning, and calculations as needed, and respond to the app with the necessary data to present the user with the visualizations.</p>
+                            
+                            
 							<h3 align="left">Technical Components</h3>
 
 							<ul align="left" style="list-style-type: square; padding-left: 2em;">
@@ -145,8 +178,6 @@
 
 
 							<h3 align="left">Prototype</h3>
-
-							<p align="left">Blah blah blah</p>
 
 							<a class="image fit">
 								<img src="images/EnclosedDevice.jpg" alt="Enclosed Device" style="width: 48%; display: inline-block" />
@@ -230,6 +261,9 @@
 								<li><a href="https://www.nxp.com/docs/en/data-sheet/MFRC522.pdf">MFRC522 datasheet</a></li>
 								<li><a href="https://github.com/wendlers/micropython-mfrc522">MFRC522 library baseline</a></li>
 								<li><a href="https://www.usmint.gov/learn/coin-and-medal-programs/coin-specifications">U.S. coin weights</a></li>
+                                <li><a href="https://ods.od.nih.gov/HealthInformation/dailyvalues.aspx">Daily Nutritional Values</a></li>
+                                <li><a href="https://www.gtinsearch.org/">Barcode API -- GTIN Search</a></li>
+                                <li><a href="https://spoonacular.com/food-api">Nutrition API -- Spoonacular</a></li>
 							</ol>
 
 						</div>
