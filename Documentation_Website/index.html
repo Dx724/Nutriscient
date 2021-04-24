@@ -196,6 +196,8 @@
 								<h2>Results</h2>
 							</header>
 
+                            <h3 align="left">Hardware -- Accurate Weight Measurement</h3>
+
 							<p align="left">Initial measurements of the load cell using the HX711 PGA/ADC showed substantial noise. To counteract this, a number of filtering techniques such as outlier rejection and data error detection were employed. Using calibrated weights, it was found that the ideal sensor calibration curve is linear in nature (with amazing accuracy and precision!).</p>
 
 							<article class="item">
@@ -245,6 +247,54 @@
 									<h3>A sequence of measurements from the calibrated device. The weights on the left were produced using scientific calibration weights. These results may seem unbelievable, but consider that our system uses a high-gain amplifier combined with a 24-bit ADC.</h3>
 								</header>
 							</article>
+                            
+                            
+                            <h3 align="left">App - Setting up and Visualizations</h3>
+                            
+                            <article class="item">
+								<a class="image fit">
+									<img src="images/ChartTop.jpg" alt="" style="width: 48%; display: inline-block" />
+									<img src="images/ChartBottom.jpg" alt="" style="width: 48%; display: inline-block" />
+									<img src="images/ChartList.jpg" alt="" style="width: 48%; display: inline-block" />
+								</a>
+								<header>
+									<h3>The visualizations shows a Pie chart of daily nutrition intake constitutions from different ingredients, and a combined histogram / line chart showing the total daily value % comsumption for a particular nutritioin, for each day of the past week. The historogram is the percentage for each day against recommented daily value, whereas the line chart shows cumulatiive measured. The daily value % data is taken from U.S. Department of Health & Human Services website.</h3>
+								</header>
+							</article>
+
+                            
+                            <article class="item">
+								<a class="image fit">
+									<img src="images/Home.jpg" alt="" style="width: 48%; display: inline-block" />
+									<img src="images/IngredientList.jpg" alt="" style="width: 48%; display: inline-block" />
+								</a>
+								<header>
+									<h3>Besides the above visualizations, the home page also provides some quick overview of today's nutritioinal intakes. The iingredient list provides a straightforward view of the history data, so that the user could determine if one of the ingredient is running out.</h3>
+								</header>
+							</article>
+                            
+                            <article class="item">
+								<a class="image fit">
+									<img src="images/IngredientSearch.jpg" alt="" style="width: 48%; display: inline-block" />
+									<img src="images/Setting.jpg" alt="" style="width: 48%; display: inline-block" />
+								</a>
+								<header>
+									<h3>The ingredient search displays potential search results for user to choose and assiciate the nutritional value with the real item (RFID). The setting page allows the user to set their unique scale ID, that's displayed on the OLED by ESP.</h3>
+								</header>
+							</article>
+
+                            
+                            <article class="item">
+								<a class="image fit">
+									<img src="images/NewItemDemo.gif" alt="" style="width: 48%; display: inline-block" />
+									<img src="images/BarcodeDemo.gif" alt="" style="width: 48%; display: inline-block" />
+									<img src="images/ScaleDemo.gif" alt="" style="width: 48%; display: inline-block" />
+								</a>
+								<header>
+									<h3>The first demo demonstrates the push notification sent to app when a new item (unregistered RFID) is placed onto the scale. The second demo demonstrates the barcode scanning after user click onto the notification, and selects an ingredient from Nutrition Database. The third demo demonstrates a measurement of weight change and update on the visualization. </h3>
+								</header>
+							</article>
+
 						</div>
 					</section>
 
