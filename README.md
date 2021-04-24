@@ -62,18 +62,3 @@ To run the device, simply:
 
 	import measure
 from the device's startup file (`main.py`) or via the `repl` of mpfshell.
-
-## WEBSITE TODO BELOW  <!-- omit in toc -->
-Website Notes:
-- Architecture diagram, talk about it
-- Talk about server stuff (architecture section?)
-- Describe prototype
-- App GIFs
-- App images (prototype section?)
-- App visualizations (results section?)
-- Low cost of device!
-- Reusability of RFID tags?
-- Additional features (special card, diet/condition-related notifications)
-- Cite nutrition DVs, other scientific references?
-- RFID vs. Barcodes vs. Computer Vision -- Design Matrix
-- README: link to location of APK
