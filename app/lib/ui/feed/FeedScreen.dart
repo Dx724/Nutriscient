@@ -95,7 +95,7 @@ class _FeedScreenState extends State<FeedScreen>
         animationController: widget.animationController,
         callback: () {
           getVisualizationData().then((value) {
-            // TODO: rebuild
+            Navigator.pushNamed(context, '/');
           });
         },
       ),
