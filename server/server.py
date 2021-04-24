@@ -277,7 +277,7 @@ def get_all_ingredient_weight():
         res = []
         for rfid in unique_rfids:
             rfid_entry = rfid_col.find_one({'rfid' : rfid})
-            if rfid_entry['ingredient_name'] != '' and rfid_entry['do_track'] == 'True':
+            if rfid_entry['ingredient_name'] != '' and rfid_entry['do_track'].lower() == 'true':
                 """ RFID is registered and should be tracked """
                 rfid_weights = []
                 rfid_weights_cursor = weight_col.find({'rfid' : rfid}).sort('_id', 1)
