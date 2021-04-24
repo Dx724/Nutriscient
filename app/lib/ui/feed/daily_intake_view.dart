@@ -361,8 +361,8 @@ class DailyIntakeView extends StatelessWidget {
                             HexColor("#8A98E8"),
                             HexColor("#8A98E8")
                           ],
-                          angle: 140 +
-                              (360 - 140) *
+                          angle: (caloriesLeft/2000)*360 +
+                              (360 - (caloriesLeft/2000)*360) *
                                   (1.0 - animation.value)),
                       child: SizedBox(
                         width: 108,
