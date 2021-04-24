@@ -63,7 +63,7 @@ class _IngredientsListScreenState extends State<IngredientsListScreen>
   }
 
   void addAllListData() {
-    const int count = 1;
+    const int count = 2;
     listViews = [];
 
     listViews.add(
@@ -215,19 +215,20 @@ class _IngredientsListScreenState extends State<IngredientsListScreen>
                                 ),
                               ),
                             ),
-                            buildButton(
-                              buttonText: 'Refresh',
-                              callback: () {
-                                getIngredientsListData().then((value) {
-                                  setState(() {
-                                    Navigator.pushNamed(context, '/list');
-                                  });
-                                  // ingredientTableData = _buildIngredientList();
-                                  // addAllListData();
-                                });
-                              },
-                              icon: Icons.refresh,
-                            )
+                            // buildButton(
+                            //   buttonText: 'Refresh',
+                            //   callback: () {
+                            //     getIngredientsListData().then((value) {
+                            //       setState(() {
+                            //         ingredientTableData = _buildIngredientList();
+                            //         addAllListData();
+                            //       });
+                            //       // ingredientTableData = _buildIngredientList();
+                            //       // addAllListData();
+                            //     });
+                            //   },
+                            //   icon: Icons.refresh,
+                            // )
                           ],
                         ),
                       )

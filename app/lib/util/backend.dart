@@ -47,7 +47,8 @@ Future<bool> registerRfid(String rfid, int ingredientId) async {
   }
   final response = await _registerRfid(rfid, ingredientId);
   if (response.statusCode == 200) {
-    if (response.body == 'OK') return true;
+    var parsed = jsonDecode(response.body);
+    if (parsed['ok']) return true;
   } else {
     print("${response.body}");
     throw Exception('API Call Failed');

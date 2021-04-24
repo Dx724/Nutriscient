@@ -12,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
-
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key key, this.animationController}) : super(key: key);
 
@@ -157,18 +156,18 @@ class _RegisterScreenState extends State<RegisterScreen>
                   context: context,
                   builder: (context) {
                     return AlertDialog(
-                      content:
-                      Text("Barcode scan\b$value"),
+                      content: Text("Barcode scan\b$value"),
                     );
                   });
             } else if (value == '-1') {
               print("Barcode scan cancelled");
             } else {
               barcodeProductSearch(value).then((value) {
-                String message = 'Result: Not found';
                 if (value.length != 0)
-                  message = "Result: $value";
-                  showMessage(context, message);
+                  search(value);
+                else
+                  showMessage(context,
+                      'Cannot find this barcode. Please try again or manually typing in ingredient.');
               });
             }
           });
@@ -214,12 +213,21 @@ class _RegisterScreenState extends State<RegisterScreen>
     if (results.length != 0)
       buildSearchResults(results);
     else
-      showMessage(context, "Cannot find $searchText\n\nPress anywhere to continue");
+      showMessage(
+          context, "Cannot find $searchText\n\nPress anywhere to continue");
   }
 
   void resultSelected(int index) async {
     debugPrint("[$kScaleId]: RFID [$rfidToRegister] --> $index");
-    registerRfid(rfidToRegister, index).then((value) => checkUnregistered());
+    registerRfid(rfidToRegister, index).then((value) async {
+      print("$value");
+      if (value) {
+        checkUnregistered();
+        showMessage(
+            context, "Successfully registered. Tap anywhere to continue.");
+        // await Future<dynamic>.delayed(const Duration(milliseconds: 3000));
+      }
+    });
   }
 
   void buildSearchResults(List results) {
